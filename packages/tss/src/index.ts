@@ -31,3 +31,7 @@ export {
 // Hot-Reload Watcher
 export { TSSWatcher } from './watcher.js';
 export type { WatcherOptions } from './watcher.js';
+
+// AutoThemeProvider
+export { AutoThemeProvider, ThemeContext, useTheme } from './AutoThemeProvider.js';
+export type { AutoThemeProviderProps } from './AutoThemeProvider.js';
