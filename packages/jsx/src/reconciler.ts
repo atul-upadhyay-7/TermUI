@@ -250,6 +250,14 @@ export function reRenderComponent(instance: ComponentInstance): Widget {
     const vnode = component({ ...props, children: children.length === 1 ? children[0] : children });
     clearCurrentFiber();
 
+    // memo() optimization: if component returned same VNode reference, skip widget rebuild
+    if (vnode === instance.lastVNode) {
+        _parentFiber = prevParent;
+        runEffects(fiber);
+        fiber.isDirty = false;
+        return instance.widget;
+    }
+
     // For simplicity in v1, rebuild the widget tree
     // TODO: Smart diffing in a future version
     const newWidget = reconcile(vnode);
