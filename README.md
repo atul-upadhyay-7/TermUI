@@ -7,8 +7,9 @@
   <a href="https://www.termui.io/docs/getting-started/installation"><img src="https://img.shields.io/badge/docs-termui.io-00ff88?style=flat" alt="Documentation"></a>
   <a href="https://www.npmjs.com/package/@termuijs/core"><img src="https://img.shields.io/npm/v/@termuijs/core.svg" alt="npm version"></a>
   <a href="https://github.com/Karanjot786/TermUI/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
-  <img src="https://img.shields.io/badge/tests-598%20passing-brightgreen" alt="598 tests passing">
-  <img src="https://img.shields.io/badge/TypeScript-5.7-blue" alt="TypeScript 5.7">
+  <img src="https://img.shields.io/badge/runtime-Bun%201.3+-orange" alt="Bun 1.3+">
+  <img src="https://img.shields.io/badge/tests-600%20passing-brightgreen" alt="600 tests passing">
+  <img src="https://img.shields.io/badge/TypeScript-5.9-blue" alt="TypeScript 5.9">
 </p>
 
 ## What is TermUI?
@@ -353,14 +354,14 @@ app('AI Assistant')
 ```bash
 git clone https://github.com/Karanjot786/TermUI.git
 cd TermUI
-pnpm install
-pnpm build
+bun install
+bun run build
 
 cd examples/dashboard
-npx tsx src/index.tsx
+bun run dev
 ```
 
-Five examples: `dashboard`, `jsx-dashboard`, `showcase`, `system-monitor`, `todo-app`.
+Six examples: `dashboard`, `jsx-dashboard`, `showcase`, `system-monitor`, `todo-app`, `widget-gallery`.
 
 ## Project structure
 
@@ -385,20 +386,22 @@ examples/
   showcase/          Widget gallery
   system-monitor/    Advanced monitor
   todo-app/          Interactive todo list
+  widget-gallery/    All widgets in one place
 ```
 
 ## Development
 
 ```bash
-pnpm install
-pnpm build      # Build all 13 packages
-pnpm test       # Run all 598 tests
-pnpm typecheck  # Type-check all packages
+bun install
+bun run build      # Build all 13 packages
+bun run test       # Run all 600 tests
+bun run typecheck  # Type-check all packages
 ```
 
 ## Requirements
 
-- Node.js 18+
+- [Bun](https://bun.sh) 1.3.0 or newer for development
+- Node.js 18+ to run published `@termuijs/*` packages from npm
 - A terminal with TTY support (256-color or truecolor recommended)
 
 ## License

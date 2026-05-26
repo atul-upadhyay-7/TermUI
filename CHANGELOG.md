@@ -4,6 +4,87 @@ All notable changes to TermUI are documented here. The format is based on [Keep 
 
 ---
 
+## [0.1.5] - 2026-05-26
+
+Full migration from Node.js + pnpm to Bun. Bun 1.3+ is now the sole development runtime. Published packages still ship Node-compatible ESM/CJS so npm consumers on Node 18+ remain unaffected. 600 tests still pass; build, dev-server, and all 6 examples verified end-to-end under Bun.
+
+### Changed
+
+#### Runtime and package manager
+
+- **Bun replaces Node + pnpm** for development, builds, tests, dev-server, examples, scaffolding, and CI. Node is no longer required for any dev workflow.
+- **`bun install` replaces `pnpm install`.** Lockfile changed from `pnpm-lock.yaml` to `bun.lock` (text format, diff-friendly).
+- **Workspace declaration** moved from `pnpm-workspace.yaml` to the root `package.json` `workspaces` field.
+- **Root `package.json`** sets `packageManager: bun@1.3.14` and `engines: { bun: ">=1.3.0" }`.
+- **`bunfig.toml`** added for install + lockfile configuration.
+
+#### @termuijs/dev-server
+
+- **`Bun.spawn()` replaces `child_process.fork()`.** The `--loader tsx` flag is gone since Bun runs `.ts`/`.tsx` natively.
+- **IPC wiring** moved from `child.on('message')` to the `ipc:` callback at spawn time.
+- **Exit handling** moved from `child.on('exit')` to the `child.exited` Promise.
+- **Alive check** uses `!child.killed && child.exitCode === null` instead of `child.connected`.
+- **`DevServerOptions.nodeFlags` renamed to `bunFlags`.** Flags are prepended to the entry file in the `cmd` array.
+- **`cli.ts` shebang** changed to `#!/usr/bin/env bun`.
+
+#### create-termui-app
+
+- **Generated `package.json` scripts** switched to Bun: `dev: bun --watch ...`, `start: bun dist/index.js`.
+- **`tsx` removed from template `devDependencies`.** Replaced with `@types/bun`.
+- **Generated `engines`** field set to `{ bun: ">=1.3.0" }`.
+- **Scaffolding output** now prints `bun install` and `bun run dev` as the next-step hints.
+
+#### Examples
+
+- All 6 examples (`dashboard`, `jsx-dashboard`, `showcase`, `system-monitor`, `todo-app`, `widget-gallery`) switched from `tsx`/`npx tsx` to Bun.
+- New `dev` script in each example using `bun --watch src/index.*`.
+- `tsx` removed from each example's devDependencies.
+
+#### Website
+
+- `prebuild` and `build` scripts switched from `node` to `bun`.
+- `scripts/generate-llm-docs.mjs` shebang changed to `#!/usr/bin/env bun`.
+
+#### Per-package configuration
+
+- All 11 library packages (core, data, jsx, motion, quick, router, store, testing, tss, ui, widgets) now declare `engines: { bun: ">=1.3.0", node: ">=18.0.0" }`. The Node entry remains because published `dist/` artifacts still target Node 18+ ESM/CJS for npm consumers.
+- `dev-server` and `create-termui-app` are Bun-only at runtime (`engines: { bun: ">=1.3.0" }` with no `node` field).
+
+#### CI
+
+- **GitHub Actions workflow** replaced `pnpm/action-setup` + `actions/setup-node` with `oven-sh/setup-bun@v2`.
+- Pipeline: `bun install --frozen-lockfile` → `bun run build` → `bun vitest run` → `bun run typecheck`.
+
+#### Testing
+
+- Test runner stays at **Vitest** (preserves `vi.stubEnv`, `vi.mock`, `vi.resetModules` APIs used by `Spinner.test.ts` and `Sparkline.test.ts`).
+- Root scripts use `bun vitest run` (Bun as script runner, vitest's standard worker pool).
+- The `--bun` flag is intentionally NOT used; the worker pool hangs on this suite size. Documented in `CLAUDE.md` for future contributors.
+
+### Removed
+
+- `pnpm-workspace.yaml` and `pnpm-lock.yaml` deleted.
+- `tsx` dependency removed from root, dev-server, all 6 examples, and scaffolded project templates.
+- `packageManager: pnpm@9.15.0` removed from root `package.json`.
+
+### Fixed
+
+- `_killChild()` now guards `kill('SIGTERM')` in a try/catch in case the child already exited.
+- `_handleChange()` now checks `child.exitCode === null` (not only `!killed`) before sending IPC reload, avoiding a send on a naturally-exited child.
+
+### Verification
+
+- Build: **20/20 packages successful** (13.9s clean, 67ms cached).
+- Tests: **600/600 passing across 58 files in 3.54s**.
+- Typecheck: **14/14 packages successful**.
+- All 6 examples boot under Bun with clean SIGWINCH + SIGTERM handling.
+- Caps fallback paths (NO_UNICODE / NO_MOTION / NO_COLOR) confirmed working in CI mode.
+- Dev-server end-to-end: file change → IPC reload signal → child exit code 0 → respawn confirmed.
+- Real-pty test (via `script` + `expect`): alt-screen enter/exit, cursor hide/show, sync-output (CSI 2026), SIGWINCH delivery, raw byte input (including `0x03`) all confirmed working under Bun.
+- Manual interactive verification: tab switching (1-5), theme cycle (t), and quit (q) all work in a real terminal under Bun.
+
+---
+
 ## [0.1.4] - 2026-05-09
 
 This release adds the focus system, 24 new widgets, 4 new UI inputs, 7 data hooks, imperative prompts, a notification center, motion-preference support, WCAG color utilities, and testing improvements. Total tests: 598.
