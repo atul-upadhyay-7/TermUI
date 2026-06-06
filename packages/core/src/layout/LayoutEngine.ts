@@ -69,6 +69,10 @@ function layoutNode(node: LayoutNode, availWidth: number, availHeight: number, p
         if (nodeWidth === undefined) nodeWidth = availWidth - margin.left - margin.right;
         if (nodeHeight === undefined) nodeHeight = availHeight - margin.top - margin.bottom;
 
+        // Validate dimensions — prevent NaN/Infinity propagation
+        if (!Number.isFinite(nodeWidth)) nodeWidth = 0;
+        if (!Number.isFinite(nodeHeight)) nodeHeight = 0;
+
         nodeWidth = clampSize(nodeWidth, style.minWidth, style.maxWidth);
         nodeHeight = clampSize(nodeHeight, style.minHeight, style.maxHeight);
 
@@ -250,9 +254,13 @@ function layoutNode(node: LayoutNode, availWidth: number, availHeight: number, p
  */
 function resolveSize(value: number | string | undefined, available: number): number | undefined {
     if (value === undefined) return undefined;
-    if (typeof value === 'number') return value;
+    if (typeof value === 'number') {
+        if (!Number.isFinite(value) || value < 0) return 0;
+        return value;
+    }
     if (typeof value === 'string' && value.endsWith('%')) {
         const pct = parseFloat(value) / 100;
+        if (!Number.isFinite(pct)) return 0;
         return Math.floor(available * pct);
     }
     return undefined;
