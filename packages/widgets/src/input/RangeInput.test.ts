@@ -79,6 +79,42 @@ describe('RangeInput', () => {
         expect(r.getLow()).toBe(0);
     });
 
+    it('onChange fires when low or high changes', async () => {
+        const { RangeInput } = await import('./RangeInput.js');
+        const onChange = vi.fn();
+        const r = new RangeInput('Price', {}, { onChange });
+
+        r.setLow(20);
+        expect(onChange).toHaveBeenCalledWith(20, 100);
+
+        r.setHigh(80);
+        expect(onChange).toHaveBeenCalledWith(20, 80);
+
+        r.setRange(30, 70);
+        expect(onChange).toHaveBeenCalledWith(30, 70);
+
+        expect(onChange).toHaveBeenCalledTimes(3);
+    });
+
+    it('onChange does not fire when value is unchanged', async () => {
+        const { RangeInput } = await import('./RangeInput.js');
+        const onChange = vi.fn();
+        const r = new RangeInput('Price', {}, { onChange });
+
+        r.setLow(0); // already 0
+        r.setHigh(100); // already 100
+        expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('onChange fires via arrow key', async () => {
+        const { RangeInput } = await import('./RangeInput.js');
+        const onChange = vi.fn();
+        const r = new RangeInput('Price', {}, { onChange });
+
+        r.handleKey(makeKey('right')); // low 0 → 1
+        expect(onChange).toHaveBeenCalledWith(1, 100);
+    });
+
     it('renders unicode track chars', async () => {
         vi.stubEnv('NO_UNICODE', '');
         vi.stubEnv('TERM', '');
