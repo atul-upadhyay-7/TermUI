@@ -166,7 +166,6 @@ export type { BasicAuthCredentials, BasicAuthPromptOptions } from './BasicAuthPr
 export { TextArea } from './TextArea.js';
 export type { TextAreaOptions } from './TextArea.js';
 
-
 export { Stepper } from './Stepper.js';
 export type { StepperOptions } from './Stepper.js';
 
@@ -209,3 +208,6 @@ export type { DisclosureOptions } from './Disclosure.js';
 
 export { Listbar } from './Listbar.js';
 export type { ListbarOptions, ListbarItem } from './Listbar.js';
+
+export { validateInput } from './validation.js';
+export type { InputValidator } from './validation.js';

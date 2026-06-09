@@ -531,6 +531,7 @@
       "name": "@termuijs/ui",
       "version": "0.1.5",
       "dependencies": {
+        "@standard-schema/spec": "^1.1.0",
         "@termuijs/core": "workspace:*",
         "@termuijs/jsx": "workspace:*",
         "@termuijs/widgets": "workspace:*",
@@ -539,6 +540,7 @@
         "@termuijs/testing": "workspace:*",
         "tsup": "^8.0.0",
         "typescript": "^5.4.0",
+        "zod": "^4.4.3",
       },
     },
     "packages/widgets": {
@@ -1044,6 +1046,8 @@
     "@termuijs/example-todo/@types/node": ["@types/node@22.19.19", "", { "dependencies": { "undici-types": "~6.21.0" } }, "sha512-dyh/xO2Fh5bYrfWaaqGrRQQGkNdmYw6AmaAUvYeUMNTWQtvb796ikLdmTchRmOlOiIJ1TDXfWgVx1QkUlQ6Hew=="],
 
     "@termuijs/quick/@types/node": ["@types/node@22.19.19", "", { "dependencies": { "undici-types": "~6.21.0" } }, "sha512-dyh/xO2Fh5bYrfWaaqGrRQQGkNdmYw6AmaAUvYeUMNTWQtvb796ikLdmTchRmOlOiIJ1TDXfWgVx1QkUlQ6Hew=="],
+
+    "@termuijs/ui/zod": ["zod@4.4.3", "", {}, "sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ=="],
 
     "onetime/mimic-fn": ["mimic-fn@2.1.0", "", {}, "sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg=="],
 

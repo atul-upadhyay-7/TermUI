@@ -1,11 +1,12 @@
 // Form — compound input container with validation
 import { Widget } from '@termuijs/widgets';
 import { type Style, type Screen, type KeyEvent, mergeStyles, defaultStyle, styleToCellAttrs } from '@termuijs/core';
+import { validateInput, type InputValidator } from './validation.js';
 
 export interface FormField {
     name: string; label: string; type: 'text' | 'select' | 'checkbox';
     placeholder?: string; required?: boolean; options?: string[];
-    validate?: (value: string) => string | null;
+    validate?: InputValidator;
 }
 export interface FormOptions {
     labelColor?: Style['fg']; errorColor?: Style['fg']; activeColor?: Style['fg'];
@@ -56,7 +57,10 @@ export class Form extends Widget {
         for (const f of this._fields) {
             const v = this._values.get(f.name) ?? '';
             if (f.required && !v.trim()) { this._errors.set(f.name, `${f.label} is required`); hasErr = true; }
-            if (f.validate) { const e = f.validate(v); if (e) { this._errors.set(f.name, e); hasErr = true; } }
+            const e = validateInput(f.validate, v);
+            if (e) {
+                this._errors.set(f.name, e);
+                hasErr = true;}
         }
         if (!hasErr) this._onSubmit?.(this.values);
         this.markDirty();
