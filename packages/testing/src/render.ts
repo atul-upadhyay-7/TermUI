@@ -181,7 +181,7 @@ function walkWidgets(
         const w = stack.pop()!;
         if (predicate(w)) result.push(w);
         // Push children in reverse so we process left-to-right
-        const children: Widget[] = (w as any)._children ?? [];
+        const children: Widget[] = (w as any)._children ?? []; // as any: Widget._children is private; accessed for test renderer tree walk
         for (let i = children.length - 1; i >= 0; i--) {
             stack.push(children[i]);
         }
@@ -192,7 +192,7 @@ function walkWidgets(
 /** Extract text content from a Text widget */
 function getTextContent(widget: Widget): string {
     if (widget instanceof Text) {
-        return (widget as any)._content ?? "";
+        return (widget as any)._content ?? ""; // as any: Text._content is private; accessed for test renderer content inspection
     }
     return "";
 }
@@ -200,7 +200,7 @@ function getTextContent(widget: Widget): string {
 /** Render the widget tree to the screen buffer */
 function renderToScreen(container: Box, screen: Screen): void {
     // Set the root rect to fill the screen
-    (container as any)._rect = {
+    (container as any)._rect = { // as any: Widget private fields accessed by test renderer; no public inspection API
         x: 0,
         y: 0,
         width: screen.cols,
@@ -212,7 +212,7 @@ function renderToScreen(container: Box, screen: Screen): void {
 
     // Clear and render
     screen.clear();
-    (container as any)._renderSelf?.(screen);
+    (container as any)._renderSelf?.(screen); // as any: Widget private fields accessed by test renderer; no public inspection API
     renderChildren(container, screen);
 }
 
@@ -224,8 +224,8 @@ function assignRects(
     width: number,
     height: number,
 ): void {
-    (widget as any)._rect = { x, y, width, height };
-    const children: Widget[] = (widget as any)._children ?? [];
+    (widget as any)._rect = { x, y, width, height }; // as any: Widget private fields accessed by test renderer; no public inspection API
+    const children: Widget[] = (widget as any)._children ?? []; // as any: Widget private fields accessed by test renderer; no public inspection API
     if (children.length === 0) return;
     const childHeight = Math.max(1, Math.floor(height / children.length));
     let currentY = y;
@@ -236,9 +236,9 @@ function assignRects(
 }
 
 function renderChildren(parent: Widget, screen: Screen): void {
-    const children: Widget[] = (parent as any)._children ?? [];
+    const children: Widget[] = (parent as any)._children ?? []; // as any: Widget private fields accessed by test renderer; no public inspection API
     for (const child of children) {
-        (child as any)._renderSelf?.(screen);
+        (child as any)._renderSelf?.(screen); // as any: Widget private fields accessed by test renderer; no public inspection API
         renderChildren(child, screen);
     }
 }
@@ -305,7 +305,7 @@ export function render(
 
     // Set up re-render callback — use fiber-preserving reRenderComponent
     setRequestRender(() => {
-        const instances: Map<Widget, any> = (globalThis as any)
+        const instances: Map<Widget, any> = (globalThis as any) // as any: set by @termuijs/jsx reconciler at runtime; not in globalThis type
             .__termuijs_instances;
         const rootInstance = instances?.get(rootWidget);
         if (rootInstance) {
@@ -376,7 +376,7 @@ export function render(
             });
         },
 
-        getAllByType<T extends Widget>(type: new (...args: any[]) => T): T[] {
+        getAllByType<T extends Widget>(type: new (...args: any[]) => T): T[] { // any[]: required to accept widget constructors with varying signatures
             return walkWidgets(container, (w) => w instanceof type) as T[];
         },
 
@@ -467,8 +467,8 @@ export function render(
 
             if (target) {
                 // Dispatch to the widget
-                if (typeof (target as any).handleMouse === 'function') {
-                    (target as any).handleMouse(event);
+                if (typeof (target as any).handleMouse === 'function') { // as any: handleMouse not on Widget base type but implemented on interactive subclasses
+                    (target as any).handleMouse(event); // as any: handleMouse not on Widget base type but implemented on interactive subclasses
                 } else {
                     target.events.emit('mouse', event);
                 }

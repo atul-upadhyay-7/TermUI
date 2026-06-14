@@ -26,8 +26,8 @@ import { Suspense } from './Suspense.js';
 
 interface ComponentInstance {
     fiber: Fiber;
-    component: FC<any>;
-    props: Record<string, any>;
+    component: FC<any>; // any: per-instance slot; specific type not knowable at interface definition
+    props: Record<string, any>; // any: per-instance slot; specific type not knowable at interface definition
     children: VNode[];
     widget: Widget;
     childInstances: ComponentInstance[];
@@ -236,7 +236,7 @@ function extractStyle(props: Record<string, any>): Partial<Style> {
 }
 
 /** Parse a color prop — accepts a named color string, hex string, or Color object */
-function parseColorProp(value: any): Color | undefined {
+function parseColorProp(value: any): Color | undefined { // any: JSX prop values are untyped at this call site
     if (!value) return undefined;
     if (typeof value === 'string') {
         if (value.startsWith('#')) return parseColor(value);

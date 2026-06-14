@@ -7,8 +7,8 @@
  * Supports `on`, `off`, `once`, `emit` with type-safe event maps.
  */
 export class EventEmitter<TEventMap extends Record<string, any>> {
-    private _handlers: Map<keyof TEventMap, Set<(data: any) => void>> = new Map();
-    private _onceHandlers: Map<keyof TEventMap, Set<(data: any) => void>> = new Map();
+    private _handlers: Map<keyof TEventMap, Set<(data: any) => void>> = new Map(); // any: handler type erased here; callers constrain via generics
+    private _onceHandlers: Map<keyof TEventMap, Set<(data: any) => void>> = new Map(); // any: handler type erased here; callers constrain via generics
 
     /**
      * Subscribe to an event.

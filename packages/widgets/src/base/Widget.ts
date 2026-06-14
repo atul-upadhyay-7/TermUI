@@ -168,7 +168,7 @@ export abstract class Widget {
         for (const child of children) {
             child.destroy();
         }
-        this.events.emit('unmount', undefined as any);
+        this.events.emit('unmount', undefined as any); // as any: EventEmitter payload typed as never for void events; cast required
         this.events.removeAll();
         this.parent = null;
     }
@@ -476,7 +476,7 @@ export abstract class Widget {
 
     /** Lifecycle: called when the widget is mounted */
     mount(): void {
-        this.events.emit('mount', undefined as any);
+        this.events.emit('mount', undefined as any); // as any: EventEmitter payload typed as never for void events; cast required
         for (const child of this._children) {
             child.mount();
         }
@@ -487,7 +487,7 @@ export abstract class Widget {
         for (const child of this._children) {
             child.unmount();
         }
-        this.events.emit('unmount', undefined as any);
+        this.events.emit('unmount', undefined as any); // as any: EventEmitter payload typed as never for void events; cast required
         this.events.removeAll();
     }
 }

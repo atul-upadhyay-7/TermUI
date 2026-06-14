@@ -428,7 +428,7 @@ export class AppBuilder {
      */
     private _refreshReactiveWidgets(widget: Widget): void {
         try {
-            const w = widget as any;
+            const w = widget as any; // as any: reactive metadata is monkey-patched onto Widget instances in widgets.ts
 
             // Text — reactive content
             if (widget instanceof Text && w.__reactiveContent) {
