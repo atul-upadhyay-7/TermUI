@@ -369,31 +369,38 @@ export class DevServer {
 
             if (!this._running) return;
 
+            // Capture the exited promise before _killChild() nulls this._child,
+            // then await it so the old process is fully gone before we respawn.
+            // This eliminates the previous fixed 100ms setTimeout race where the
+            // old child (with a 2s SIGKILL fallback) could still be alive when
+            // the new child started.
+            const exitedPromise = this._child?.exited ?? Promise.resolve(0);
+
             this._killChild();
 
-            setTimeout(() => {
-                if (this._running && this._entryFile) {
-                    this._spawnChild();
+            await exitedPromise.catch(() => {});
 
-                    const respawnTime =
-                        new Date().toLocaleTimeString();
+            if (this._running && this._entryFile) {
+                this._spawnChild();
 
-                    console.log(
-                        `  🔄 [${respawnTime}] Respawned`
-                    );
+                const respawnTime =
+                    new Date().toLocaleTimeString();
 
-                    this._banner = 'Reloaded';
+                console.log(
+                    `  🔄 [${respawnTime}] Respawned`
+                );
 
-                    if (this._bannerTimer) {
-                        clearTimeout(this._bannerTimer);
-                    }
+                this._banner = 'Reloaded';
 
-                    this._bannerTimer = setTimeout(() => {
-                        this._banner = null;
-                        this._bannerTimer = null;
-                    }, this._bannerMs);
+                if (this._bannerTimer) {
+                    clearTimeout(this._bannerTimer);
                 }
-            }, 100);
+
+                this._bannerTimer = setTimeout(() => {
+                    this._banner = null;
+                    this._bannerTimer = null;
+                }, this._bannerMs);
+            }
         }, this._debounce);
     }
 
