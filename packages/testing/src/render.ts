@@ -216,7 +216,11 @@ function renderToScreen(container: Box, screen: Screen): void {
     renderChildren(container, screen);
 }
 
-/** Simple recursive layout: stack children vertically */
+/**
+ * Simplified layout: divides height equally among children using integer division.
+ * Does NOT match ConstraintLayout's real output — do not assert pixel-perfect
+ * coordinates in tests using this renderer. Only assert cell content (text, chars).
+ */
 function assignRects(
     widget: Widget,
     x: number,
@@ -390,7 +394,7 @@ export function render(
             return matches.length > 0 ? matches[0] : null;
         },
 
-        queryByType<T extends Widget>(type: new (...args: any[]) => T): T | null {
+        queryByType<T extends Widget>(type: new (...args: any[]) => T): T | null { // any[]: required to accept widget constructors with varying signatures
             const matches = walkWidgets(container, (w) => w instanceof type) as T[];
             return matches.length > 0 ? matches[0] : null;
         },
@@ -398,7 +402,7 @@ export function render(
         queryAllByText(text: string): Widget[] {
             return instance.getAllByText(text);
         },
-        queryAllByType<T extends Widget>(type: new (...args: any[]) => T): T[] {
+        queryAllByType<T extends Widget>(type: new (...args: any[]) => T): T[] { // any[]: required to accept widget constructors with varying signatures
             return instance.getAllByType(type);
         },
 
