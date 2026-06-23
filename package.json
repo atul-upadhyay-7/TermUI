@@ -17,7 +17,8 @@
     "lint": "turbo run lint",
     "bench": "bun packages/core/src/benchmark/run-all.ts",
     "clean": "turbo run clean && rm -rf node_modules",
-    "format": "prettier --write \".\""
+    "format": "prettier --write \".\"",
+    "registry:build": "bun scripts/build-registry.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
