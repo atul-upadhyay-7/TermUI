@@ -95,7 +95,7 @@ export const inverse = `${CSI}7m`;
 export const strikethrough = `${CSI}9m`;
 
 export const resetBold = `${CSI}22m`;
-export const resetDim = `${CSI}22m`;
+export const resetDim = resetBold;
 export const resetItalic = `${CSI}23m`;
 export const resetUnderline = `${CSI}24m`;
 export const resetBlink = `${CSI}25m`;
@@ -207,7 +207,3 @@ export function readClipboard(
     });
 }
 
-export const clipboard = {
-    write: writeClipboard,
-    read: readClipboard,
-};
