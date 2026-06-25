@@ -137,6 +137,13 @@ export function BrowserPreview({
             fps: 30,
         }
 
+        // App.ts registers SIGINT/SIGTERM/uncaughtException — process.on is undefined in browser
+        // ponytail: stub only missing methods; no-op signals are fine in a browser iframe context
+        const proc = process as unknown as Record<string, unknown>
+        if (typeof proc['on'] !== 'function') proc['on'] = () => process
+        if (typeof proc['off'] !== 'function') proc['off'] = () => process
+        if (typeof proc['exit'] !== 'function') proc['exit'] = () => {}
+
         const widget = factory()
         const app = new App(widget, opts)
         app.mount().catch(console.error)
