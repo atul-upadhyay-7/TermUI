@@ -116,6 +116,75 @@ import {
     Masonry,
     Grid,
 } from '@termuijs/widgets'
+import {
+    Tabs,
+    MenuBar,
+    Menu,
+    Modal,
+    Drawer,
+    Select,
+    Combobox,
+    LinearPrompt,
+    Pages,
+    ContentSwitcher,
+    SnippetPrompt,
+    MultiSelect,
+    Transfer,
+    SortPrompt,
+    Toast,
+    ConfirmDialog,
+    Form,
+    NotificationCenter,
+    PasswordInput,
+    NumberInput,
+    TagInput,
+    MaskedInput,
+    PathInput,
+    KeyboardShortcuts,
+    FilePicker,
+    DatePicker,
+    TimePicker,
+    DateRangePicker,
+    ColorPicker,
+    AppShell,
+    Pagination,
+    ScalePrompt,
+    SegmentedControl,
+    SearchableSelect,
+    Autocomplete,
+    Switch,
+    CheckboxGroup,
+    ButtonGroup,
+    Wizard,
+    MultilineTextInput,
+    BasicAuthPrompt,
+    TextArea,
+    Announcer,
+    RadioGroup,
+    Rating,
+    ThemeSwitcher,
+    TreeSelect,
+    EmailInput,
+    QuizPrompt,
+    EditablePrompt,
+    SurveyPrompt,
+    Breadcrumb,
+    Disclosure,
+    Listbar,
+    Popover,
+    SearchInput,
+    TokenUsage,
+    WelcomeScreen,
+    SetupFlow,
+    Spacer,
+} from '@termuijs/ui'
+import {
+    Meter,
+    BrailleCanvas,
+    GridItem,
+    DraggableWidget,
+    DroppableWidget,
+} from '@termuijs/widgets'
 
 const demos: Record<string, () => RootWidget> = {
     // ── Display ───────────────────────────────────────
@@ -980,6 +1049,592 @@ const demos: Record<string, () => RootWidget> = {
         const w = new LineGauge({}, { showLabel: true, fillColor: { type: 'named', name: 'cyan' } })
         w.setValue(0.73)
         return w
+    },
+
+    // ── @termuijs/widgets (remaining) ────────────────
+
+    'meter': () => {
+        const g = new Grid({}, { columns: 1, gap: 0 })
+        const cpu = new Meter('CPU ', {}, { low: 0.25, high: 0.75, showLabel: true })
+        const mem = new Meter('MEM ', {}, { low: 0.25, high: 0.75, showLabel: true })
+        const dsk = new Meter('DSK ', {}, { low: 0.25, high: 0.75, showLabel: true })
+        cpu.setValue(0.74)
+        mem.setValue(0.51)
+        dsk.setValue(0.28)
+        g.addItem(cpu)
+        g.addItem(mem)
+        g.addItem(dsk)
+        return g
+    },
+
+    'braille-canvas': () => {
+        const w = new BrailleCanvas(
+            { width: 80, height: 32, color: { type: 'named', name: 'cyan' } },
+        )
+        // Draw a sine wave
+        for (let x = 0; x < 80; x++) {
+            const y = Math.round(12 + 10 * Math.sin((x / 80) * Math.PI * 4))
+            w.drawPixel(x, y)
+        }
+        // Draw a horizontal axis
+        for (let x = 0; x < 80; x++) {
+            w.drawPixel(x, 24)
+        }
+        return w
+    },
+
+    'grid-item': () => {
+        const g = new Grid({}, { columns: 3, rows: 2, gap: 1 })
+        // Normal items
+        const a = new GridItem()
+        a.addChild(new Text('A'))
+        const b = new GridItem({}, { columnStart: 2, columnEnd: 4 })
+        b.addChild(new Text('B (spans cols 2–3)'))
+        const c = new GridItem()
+        c.addChild(new Text('C'))
+        const d = new GridItem({}, { rowStart: 2 })
+        d.addChild(new Text('D'))
+        const e = new GridItem()
+        e.addChild(new Text('E'))
+        g.addItem(a)
+        g.addItem(b)
+        g.addItem(c)
+        g.addItem(d)
+        g.addItem(e)
+        return g
+    },
+
+    'draggable-widget': () => {
+        const container = new Stack([])
+        const label = new Text('[ Drag me ] — press Space to start drag, Esc to cancel', { fg: { type: 'named', name: 'cyan' } })
+        const dw = new DraggableWidget({ id: 'demo-item', onDragStart: () => {} })
+        dw.addChild(label)
+        container.addChild(dw)
+        return container
+    },
+
+    'droppable-widget': () => {
+        const container = new Stack([])
+        const label = new Text('[ Drop zone ] — press Enter/Space to accept drop', { fg: { type: 'named', name: 'yellow' } })
+        const dz = new DroppableWidget({ id: 'demo-zone', onDrop: (_id) => {} })
+        dz.addChild(label)
+        container.addChild(dz)
+        return container
+    },
+
+    // ── @termuijs/ui ─────────────────────────────────
+
+    'tabs': () => new Tabs(
+        [
+            { label: 'Overview',  content: new Text('Welcome to TermUI — a rich component library for building terminal UIs.') },
+            { label: 'Install',   content: new Text('npm install @termuijs/ui @termuijs/widgets @termuijs/core') },
+            { label: 'Changelog', content: new Text('v0.1.7 — Added 71 @termuijs/ui components.\nv0.1.0 — Initial release.') },
+        ],
+        { activeColor: { type: 'named', name: 'cyan' } },
+    ),
+
+    'menu-bar': () => new MenuBar(
+        [
+            { label: 'File',  items: [
+                { label: 'New',   action: () => {} },
+                { label: 'Open',  action: () => {} },
+                { label: 'Save',  action: () => {} },
+                { label: 'Quit',  action: () => {} },
+            ]},
+            { label: 'Edit',  items: [
+                { label: 'Undo',  action: () => {} },
+                { label: 'Redo',  action: () => {} },
+                { label: 'Cut',   action: () => {} },
+                { label: 'Copy',  action: () => {} },
+                { label: 'Paste', action: () => {} },
+            ]},
+            { label: 'View',  items: [
+                { label: 'Zoom In',  action: () => {} },
+                { label: 'Zoom Out', action: () => {} },
+            ]},
+        ],
+        {},
+        { activeColor: { type: 'named', name: 'cyan' } },
+    ),
+
+    'menu': () => new Menu({
+        items: [
+            { label: 'New File',     shortcut: 'Ctrl+N', onSelect: () => {} },
+            { label: 'Open…',        shortcut: 'Ctrl+O', onSelect: () => {} },
+            { label: 'Save',         shortcut: 'Ctrl+S', onSelect: () => {} },
+            { label: 'Save As…',     shortcut: 'Ctrl+Shift+S', onSelect: () => {} },
+            { label: 'Close',        shortcut: 'Ctrl+W', disabled: true, onSelect: () => {} },
+            { label: 'Quit',         shortcut: 'Ctrl+Q', onSelect: () => {} },
+        ],
+        onClose: () => {},
+    }),
+
+    'modal': () => {
+        const m = new Modal(
+            { title: 'Confirm Action', width: 40, height: 8, borderColor: { type: 'named', name: 'cyan' } },
+        )
+        m.setContent(new Text('Are you sure you want to deploy to production?\n\nThis will affect all users immediately.', {}, { wrap: true }))
+        m.show()
+        return m
+    },
+
+    'drawer': () => {
+        const d = new Drawer({
+            position: 'right',
+            width: 30,
+            title: 'Settings',
+            onClose: () => {},
+        })
+        d.open()
+        return d
+    },
+
+    'select': () => new Select(
+        [
+            { label: 'Node.js 22',   value: 'node22' },
+            { label: 'Node.js 20',   value: 'node20' },
+            { label: 'Node.js 18',   value: 'node18', disabled: true },
+            { label: 'Deno 2',       value: 'deno2'  },
+            { label: 'Bun 1',        value: 'bun1'   },
+        ],
+        { placeholder: 'Select a runtime…' },
+    ),
+
+    'combobox': () => new Combobox(
+        [
+            { label: 'TypeScript',  value: 'ts'  },
+            { label: 'JavaScript',  value: 'js'  },
+            { label: 'Rust',        value: 'rs'  },
+            { label: 'Go',          value: 'go'  },
+            { label: 'Python',      value: 'py'  },
+            { label: 'Zig',         value: 'zig' },
+        ],
+        { placeholder: 'Search languages…' },
+    ),
+
+    'linear-prompt': () => new LinearPrompt(
+        [
+            { label: 'Development',  value: 'dev'  },
+            { label: 'Staging',      value: 'stage'},
+            { label: 'Production',   value: 'prod' },
+        ],
+        { question: 'Which environment to deploy to?', activeColor: { type: 'named', name: 'cyan' } },
+    ),
+
+    'pages': () => {
+        const p = new Pages([
+            { name: 'home',    content: new Text('Home page — press Tab to navigate') },
+            { name: 'widgets', content: new Text('Widgets page — 60+ components') },
+            { name: 'docs',    content: new Text('Docs page — full API reference') },
+        ])
+        return p
+    },
+
+    'content-switcher': () => {
+        const cs = new ContentSwitcher()
+        cs.addChild(new Text('Panel A — Active content shown here'))
+        cs.addChild(new Text('Panel B — Hidden until switched'))
+        return cs
+    },
+
+    'snippet-prompt': () => new SnippetPrompt(
+        'Hello, {{name}}! Welcome to {{project}}.',
+        {},
+    ),
+
+    'multi-select': () => new MultiSelect(
+        [
+            { label: 'TypeScript',  value: 'ts'     },
+            { label: 'ESLint',      value: 'eslint'  },
+            { label: 'Prettier',    value: 'prettier'},
+            { label: 'Vitest',      value: 'vitest'  },
+            { label: 'Husky',       value: 'husky'   },
+        ],
+        { activeColor: { type: 'named', name: 'cyan' } },
+    ),
+
+    'transfer': () => new Transfer(
+        [
+            { label: 'TypeScript', value: 'ts'      },
+            { label: 'React',      value: 'react'   },
+            { label: 'Vite',       value: 'vite'    },
+            { label: 'Vitest',     value: 'vitest'  },
+            { label: 'Prettier',   value: 'prettier'},
+            { label: 'ESLint',     value: 'eslint'  },
+        ],
+        { activeColor: { type: 'named', name: 'cyan' } },
+    ),
+
+    'sort-prompt': () => new SortPrompt(
+        ['Design', 'Implement', 'Test', 'Review', 'Deploy'],
+        { activeColor: { type: 'named', name: 'cyan' } },
+    ),
+
+    'toast': () => {
+        const t = new Toast({ position: 'top-right', durationMs: 99999 })
+        t.success('Deployment successful!')
+        t.info('3 new notifications')
+        t.warning('Memory usage at 80%')
+        return t
+    },
+
+    'confirm-dialog': () => {
+        const d = new ConfirmDialog({
+            message: 'Are you sure you want to delete this file?\nThis action cannot be undone.',
+            confirmLabel: 'Delete',
+            cancelLabel: 'Cancel',
+            borderColor: { type: 'named', name: 'red' },
+            onConfirm: () => {},
+            onCancel: () => {},
+        })
+        d.show()
+        return d
+    },
+
+    'form': () => new Form(
+        [
+            { name: 'name',    label: 'Full Name',    type: 'text',     placeholder: 'John Doe'          },
+            { name: 'email',   label: 'Email',        type: 'text',     placeholder: 'john@example.com'  },
+            { name: 'role',    label: 'Role',         type: 'select',   options: ['Admin', 'Editor', 'Viewer'] },
+            { name: 'agree',   label: 'Terms',        type: 'checkbox'                                    },
+        ],
+        { activeColor: { type: 'named', name: 'cyan' } },
+    ),
+
+    'notification-center': () => new NotificationCenter({
+        position: 'top-right',
+        maxVisible: 5,
+        width: 36,
+    }),
+
+    'password-input': () => new PasswordInput(
+        {},
+        { placeholder: 'Enter your password…' },
+    ),
+
+    'number-input': () => new NumberInput(
+        {},
+        { placeholder: 'Enter a number…', min: 0, max: 999, step: 1 },
+    ),
+
+    'tag-input': () => new TagInput(
+        {},
+        { placeholder: 'Add tags…', defaultTags: ['typescript', 'terminal', 'ui'] },
+    ),
+
+    'masked-input': () => new MaskedInput(
+        {},
+        { mask: '9999-9999-9999-9999', placeholder: 'Card number' },
+    ),
+
+    'path-input': () => new PathInput(
+        {},
+        { placeholder: '/path/to/file', cwd: '/Users' },
+    ),
+
+    'keyboard-shortcuts': () => new KeyboardShortcuts(
+        [
+            { key: 'Ctrl+N', description: 'New file',          category: 'File'   },
+            { key: 'Ctrl+O', description: 'Open file',         category: 'File'   },
+            { key: 'Ctrl+S', description: 'Save file',         category: 'File'   },
+            { key: 'Ctrl+Z', description: 'Undo',              category: 'Edit'   },
+            { key: 'Ctrl+Y', description: 'Redo',              category: 'Edit'   },
+            { key: 'Ctrl+F', description: 'Find in files',     category: 'Search' },
+            { key: 'Ctrl+P', description: 'Command palette',   category: 'Search' },
+            { key: 'F5',     description: 'Start debugging',   category: 'Debug'  },
+        ],
+        { showCategories: true, columns: 2 },
+    ),
+
+    'file-picker': () => new FilePicker({
+        startPath: '/Users',
+        showHidden: false,
+        onSelect: (_path: string) => {},
+        onCancel: () => {},
+    }),
+
+    'date-picker': () => new DatePicker({
+        value: new Date('2026-06-26'),
+    }),
+
+    'time-picker': () => new TimePicker({
+        value: new Date('2026-06-26T14:30:00'),
+        use24Hour: true,
+    }),
+
+    'date-range-picker': () => new DateRangePicker({
+        value: { start: new Date('2026-06-01'), end: new Date('2026-06-30') },
+    }),
+
+    'color-picker': () => new ColorPicker({
+        value: '#4ecdc4',
+    }),
+
+    'app-shell': () => {
+        const header = new Text(' TermUI App', { fg: { type: 'named', name: 'cyan' } })
+        const footer = new Text(' Press ? for help  |  q to quit', { fg: { type: 'named', name: 'brightBlack' } })
+        const sidebar = new Text('• Dashboard\n• Widgets\n• Docs\n• Settings')
+        const main = new Text('Main content area — select a page from the sidebar.')
+        return new AppShell({ header, footer, sidebar, main, sidebarWidth: 18 })
+    },
+
+    'pagination': () => new Pagination(3, 10, {}),
+
+    'scale-prompt': () => new ScalePrompt(
+        {},
+        {
+            max: 10,
+            question: 'How likely are you to recommend TermUI?',
+            endLabels: ['Not likely', 'Very likely'],
+            activeColor: { type: 'named', name: 'cyan' },
+        },
+    ),
+
+    'segmented-control': () => new SegmentedControl({
+        options: ['Day', 'Week', 'Month', 'Year'],
+        value: 'Week',
+        activeColor: { type: 'named', name: 'cyan' },
+    }),
+
+    'searchable-select': () => new SearchableSelect(
+        [
+            { label: 'Vercel',     value: 'vercel'    },
+            { label: 'Netlify',    value: 'netlify'   },
+            { label: 'Cloudflare', value: 'cloudflare'},
+            { label: 'Railway',    value: 'railway'   },
+            { label: 'Render',     value: 'render'    },
+            { label: 'Fly.io',     value: 'flyio'     },
+        ],
+        { placeholder: 'Search providers…', activeColor: { type: 'named', name: 'cyan' } },
+    ),
+
+    'autocomplete': () => new Autocomplete(
+        {},
+        {
+            items: ['TypeScript', 'JavaScript', 'Python', 'Rust', 'Go', 'Zig', 'Swift', 'Kotlin', 'Elixir'],
+            placeholder: 'Type a language…',
+            maxSuggestions: 5,
+        },
+    ),
+
+    'switch': () => new Switch({
+        defaultValue: true,
+        label: 'Enable notifications',
+        onChange: (_val: boolean) => {},
+    }),
+
+    'checkbox-group': () => new CheckboxGroup({
+        options: [
+            { label: 'TypeScript',  value: 'ts'      },
+            { label: 'ESLint',      value: 'eslint'  },
+            { label: 'Prettier',    value: 'prettier'},
+            { label: 'Husky',       value: 'husky'   },
+            { label: 'lint-staged', value: 'lint-staged' },
+        ],
+        defaultValues: ['ts', 'prettier'],
+    }),
+
+    'button-group': () => new ButtonGroup(
+        [
+            { label: 'Save',    value: 'save'   },
+            { label: 'Preview', value: 'preview'},
+            { label: 'Discard', value: 'discard'},
+        ],
+        {},
+        { activeColor: { type: 'named', name: 'cyan' }, onSelect: (_v: string) => {} },
+    ),
+
+    'wizard': () => new Wizard(
+        [
+            { title: 'Project Setup',  render: () => new Text('Enter project name and description.') },
+            { title: 'Dependencies',   render: () => new Text('Select packages to install.') },
+            { title: 'Configuration',  render: () => new Text('Configure TypeScript and linting.') },
+            { title: 'Review',         render: () => new Text('Review your choices before creating.') },
+        ],
+        { onComplete: (_data: unknown[]) => {} },
+    ),
+
+    'multiline-text-input': () => new MultilineTextInput(
+        {},
+        { placeholder: 'Write a detailed description…' },
+    ),
+
+    'basic-auth-prompt': () => new BasicAuthPrompt(
+        {},
+        { usernameLabel: 'Username', passwordLabel: 'Password' },
+    ),
+
+    'text-area': () => new TextArea(
+        {},
+        { rows: 5, placeholder: 'Start typing your message here…' },
+    ),
+
+    'announcer': () => {
+        const a = new Announcer({ history: 5 })
+        a.announce('Widget mounted successfully', 'polite')
+        a.announce('3 notifications pending', 'polite')
+        return a
+    },
+
+    'radio-group': () => new RadioGroup({
+        options: [
+            { label: 'Light',  value: 'light' },
+            { label: 'Dark',   value: 'dark'  },
+            { label: 'System', value: 'system'},
+        ],
+        defaultValue: 'dark',
+        onChange: (_v: string) => {},
+    }),
+
+    'rating': () => {
+        const r = new Rating(
+            {},
+            { max: 5, filledColor: { type: 'named', name: 'yellow' }, onSelect: (_v: number) => {} },
+        )
+        r.setValue(4)
+        return r
+    },
+
+    'theme-switcher': () => new ThemeSwitcher({
+        themes: ['Default', 'Dracula', 'Catppuccin', 'Nord', 'One Dark'],
+        activeTheme: 'Catppuccin',
+        activeColor: { type: 'named', name: 'cyan' },
+    }),
+
+    'tree-select': () => new TreeSelect(
+        [
+            { label: 'Frontend', value: 'frontend', expanded: true, children: [
+                { label: 'React',      value: 'react'  },
+                { label: 'Vue',        value: 'vue'    },
+                { label: 'Svelte',     value: 'svelte' },
+            ]},
+            { label: 'Backend', value: 'backend', children: [
+                { label: 'Node.js',    value: 'node'   },
+                { label: 'Deno',       value: 'deno'   },
+                { label: 'Bun',        value: 'bun'    },
+            ]},
+        ],
+        { multiple: true, activeColor: { type: 'named', name: 'cyan' } },
+    ),
+
+    'email-input': () => new EmailInput(
+        {},
+        {
+            placeholder: 'you@example.com',
+            domains: ['gmail.com', 'outlook.com', 'proton.me', 'termuijs.dev'],
+        },
+    ),
+
+    'quiz-prompt': () => new QuizPrompt(
+        [
+            {
+                question: 'What does TermUI use to render widgets?',
+                options: ['Canvas API', 'xterm.js', 'React DOM', 'WebGL'],
+                correctIndex: 1,
+            },
+            {
+                question: 'Which language does TermUI use?',
+                options: ['JavaScript', 'Python', 'TypeScript', 'Rust'],
+                correctIndex: 2,
+            },
+        ],
+        {},
+        { correctColor: { type: 'named', name: 'green' }, wrongColor: { type: 'named', name: 'red' } },
+    ),
+
+    'editable-prompt': () => new EditablePrompt({
+        message: 'Configure your project:',
+        choices: [
+            { type: 'checkbox', name: 'typescript', message: 'Enable TypeScript', initial: 'true' },
+            { type: 'checkbox', name: 'eslint',     message: 'Add ESLint',        initial: 'true' },
+            { type: 'text',     name: 'projectName',message: 'Project name',      initial: 'my-app' },
+        ],
+    }),
+
+    'survey-prompt': () => new SurveyPrompt(
+        [
+            { id: 'satisfaction', question: 'How satisfied are you?',  type: 'choice', options: ['Very', 'Somewhat', 'Not really', 'Not at all'] },
+            { id: 'recommend',   question: 'Would you recommend?',      type: 'choice', options: ['Yes', 'Maybe', 'No'] },
+            { id: 'feedback',    question: 'Any other feedback?',        type: 'text' },
+        ],
+        {},
+        { onComplete: (_answers: Record<string, string>) => {} },
+    ),
+
+    'breadcrumb': () => new Breadcrumb({
+        items: [
+            { label: 'Home',    onSelect: () => {} },
+            { label: 'Docs',    onSelect: () => {} },
+            { label: 'Widgets', onSelect: () => {} },
+            { label: 'Breadcrumb' },
+        ],
+        currentColor:    { type: 'named', name: 'cyan'       },
+        separatorColor:  { type: 'named', name: 'brightBlack'},
+    }),
+
+    'disclosure': () => new Disclosure(
+        new Text('TermUI ships with over 60 widgets covering display, feedback, data, input, and layout categories. All widgets are TypeScript-native and work in both Node.js and browser environments via xterm.js.', {}, { wrap: true }),
+        { summary: 'About TermUI', defaultOpen: true },
+    ),
+
+    'listbar': () => new Listbar(
+        [
+            { label: 'New',     key: 'n', action: () => {} },
+            { label: 'Open',    key: 'o', action: () => {} },
+            { label: 'Save',    key: 's', action: () => {} },
+            { label: 'Search',  key: '/', action: () => {} },
+            { label: 'Help',    key: '?', action: () => {} },
+            { label: 'Quit',    key: 'q', action: () => {} },
+        ],
+        {},
+        { activeColor: { type: 'named', name: 'cyan' }, keyColor: { type: 'named', name: 'brightBlack' } },
+    ),
+
+    'popover': () => {
+        const content = new Text('Press ? for help\nPress q to quit\nPress Tab to focus next')
+        const p = new Popover(content, {}, { placement: 'bottom', title: 'Shortcuts' })
+        p.open()
+        return p
+    },
+
+    'search-input': () => new SearchInput({
+        placeholder: 'Search components…',
+        onSearch: (_q: string) => {},
+    }),
+
+    'token-usage': () => {
+        const w = new TokenUsage({ inputTokens: 1842, outputTokens: 524 })
+        return w
+    },
+
+    'welcome-screen': () => new WelcomeScreen({
+        title: 'TermUI',
+        subtitle: 'The shadcn/ui for terminals',
+        tagline: 'Build beautiful CLI apps in TypeScript',
+        keymap: [
+            { key: '↑↓',  action: 'navigate'    },
+            { key: 'Enter', action: 'select'     },
+            { key: '?',     action: 'help'       },
+            { key: 'q',     action: 'quit'       },
+        ],
+    }),
+
+    'setup-flow': () => new SetupFlow({
+        appName: 'My TermUI App',
+        steps: [
+            { title: 'Welcome',      render: () => new Text('Let\'s get your project set up!') },
+            { title: 'Install',      render: () => new Text('npm install @termuijs/ui') },
+            { title: 'Configure',    render: () => new Text('Create your first widget.') },
+        ],
+        onComplete: () => {},
+    }),
+
+    'spacer': () => {
+        const col = new Stack([])
+        col.addChild(new Text('Above spacer', { fg: { type: 'named', name: 'cyan' } }))
+        col.addChild(new Spacer(1))
+        col.addChild(new Text('Below spacer', { fg: { type: 'named', name: 'yellow' } }))
+        return col
     },
 }
 
