@@ -42,6 +42,18 @@ describe('extractApi', () => {
   it('returns null when no constructor is present', () => {
     expect(extractApi('export const x = 1', 'x')).toBeNull();
   });
+  it('expands an inline object-literal options param (TextInput)', () => {
+    const src = readFileSync(join(PKG, 'widgets/src/input/TextInput.ts'), 'utf-8');
+    const api = extractApi(src, 'TextInput');
+    expect(api).not.toBeNull();
+    const names = api!.props.map((p) => p.name);
+    expect(names).toEqual(expect.arrayContaining(['placeholder', 'mask', 'maxLength']));
+    expect(names).not.toContain('options');
+    // no truncated/garbage types: each prop type has no unclosed brace
+    for (const p of api!.props) {
+      expect(p.type).not.toMatch(/\{[^}]*$/);
+    }
+  });
 });
 
 describe('rewriteImports', () => {

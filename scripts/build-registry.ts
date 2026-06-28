@@ -151,25 +151,51 @@ function fieldDescription(block: string, fieldName: string): string {
   return cleanSummary(m[1] ?? m[2] ?? '');
 }
 
+/**
+ * Parse `name?: type;` field lines from an interface/object body into props.
+ * Brace-aware: a field whose TYPE is itself an inline object literal (e.g.
+ * `anchor?: { x: number; y: number }`) is captured whole — the terminating `;`
+ * is the one at brace-depth 0, not a `;` nested inside the type. Works for both
+ * multi-line interfaces and single-line inline object literals.
+ */
+function parseFields(body: string): ApiProp[] {
+  const props: ApiProp[] = [];
+  // Matches the start of each field: `name?:` after the body start or a
+  // depth-0 `;`/`{`. The lookbehind keeps the delimiter for the next field.
+  const headRe = /(?:^|(?<=[;{]))\s*(\w+)(\??):\s*/gm;
+  let h: RegExpExecArray | null;
+  while ((h = headRe.exec(body)) !== null) {
+    const name = h[1]!;
+    // Walk from the end of the head to the depth-0 `;`, balancing nested braces.
+    let depth = 0;
+    let end = -1;
+    for (let i = headRe.lastIndex; i < body.length; i++) {
+      const c = body[i]!;
+      if (c === '{') depth++;
+      else if (c === '}') { if (depth === 0) { end = i; break; } depth--; }
+      else if (c === ';' && depth === 0) { end = i; break; }
+    }
+    if (end === -1) end = body.length;
+    const type = body.slice(headRe.lastIndex, end).replace(/\s+/g, ' ').trim();
+    if (!type) continue;
+    props.push({
+      name,
+      type,
+      required: h[2] !== '?',
+      description: fieldDescription(body, name),
+    });
+    // Resume scanning just past the terminator so the next head can anchor.
+    headRe.lastIndex = end;
+  }
+  return props;
+}
+
 /** Parse `interface NameOptions { ... }` fields into props. */
 function parseOptionsInterface(content: string, optionsTypeName: string): ApiProp[] {
   const re = new RegExp(`interface\\s+${optionsTypeName}\\s*(?:extends[^{]+)?{([\\s\\S]*?)\\n}`, 'm');
   const m = re.exec(content);
   if (!m) return [];
-  const body = m[1]!;
-  const props: ApiProp[] = [];
-  const fieldRe = /^\s*(\w+)(\??):\s*([^;]+);/gm;
-  let f: RegExpExecArray | null;
-  while ((f = fieldRe.exec(body)) !== null) {
-    const name = f[1]!;
-    props.push({
-      name,
-      type: f[3]!.replace(/\s+/g, ' ').trim(),
-      required: f[2] !== '?',
-      description: fieldDescription(body, name),
-    });
-  }
-  return props;
+  return parseFields(m[1]!);
 }
 
 /**
@@ -182,15 +208,30 @@ export function extractApi(content: string, name: string): ComponentApi | null {
   const params = ctor[1]!.replace(/\s+/g, ' ').trim();
   const signature = `new ${name}(${params})`;
   const props: ApiProp[] = [];
-  const firstParams = params.split(',').slice(0, 2);
-  for (const p of firstParams) {
-    const pm = /^(\w+)(\??):\s*([^=]+?)(?:=.*)?$/.exec(p.trim());
-    if (pm && !/style/i.test(pm[1]!) && !/Options$/.test(pm[3]!.trim())) {
-      props.push({ name: pm[1]!, type: pm[3]!.trim(), required: pm[2] !== '?' && !p.includes('='), description: '' });
-    }
+
+  // Inline object-literal options param: `options?: { ... } = {}`.
+  const inlineOpts = /(?:options|opts|props)\??:\s*\{([\s\S]*?)\}\s*(?:=|,|$)/.exec(params);
+
+  // Positional params: iterate the comma-split list but STOP at the first param
+  // whose name is options/opts/props or whose type starts with `{`. A fragment
+  // containing a brace means the naive comma-split already fragmented an inline
+  // object, so guard against those broken fragments.
+  for (const p of params.split(',')) {
+    const t = p.trim();
+    if (/[{}]/.test(t) || /=>/.test(t)) break;
+    const pm = /^(\w+)(\??):\s*([^=]+?)(?:=.*)?$/.exec(t);
+    if (!pm) break;
+    if (/^(?:options|opts|props)$/.test(pm[1]!)) break;
+    if (/style/i.test(pm[1]!) || /Options$/.test(pm[3]!.trim())) continue;
+    props.push({ name: pm[1]!, type: pm[3]!.trim(), required: pm[2] !== '?' && !p.includes('='), description: '' });
   }
-  const optType = /:\s*(?:Partial<)?(\w*Options)\b/.exec(params)?.[1];
-  if (optType) props.push(...parseOptionsInterface(content, optType));
+
+  if (inlineOpts) {
+    props.push(...parseFields(inlineOpts[1]!));
+  } else {
+    const optType = /:\s*(?:Partial<)?(\w*Options)\b/.exec(params)?.[1];
+    if (optType) props.push(...parseOptionsInterface(content, optType));
+  }
   return { signature, props };
 }
 
