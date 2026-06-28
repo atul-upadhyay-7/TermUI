@@ -4,7 +4,7 @@ description: "TermUI's capability flags (NO_UNICODE, NO_MOTION, NO_COLOR) make t
 ---
 
 # Accessibility & caps Flags
-TermUI apps run in diverse environments — CI pipelines, remote SSH sessions, accessibility tools, and terminals that don't support unicode or colors. The `caps` object tells your app what the current environment supports.
+TermUI apps run in diverse environments, CI pipelines, remote SSH sessions, accessibility tools, and terminals that don't support unicode or colors. The `caps` object tells your app what the current environment supports.
 ## The caps object
 ```ts
 import { caps } from '@termuijs/core'
@@ -13,7 +13,7 @@ caps.unicode  // boolean — false when NO_UNICODE=1
 caps.motion   // boolean — false when NO_MOTION=1
 caps.color    // boolean — false when NO_COLOR=1
 ```
-These are read once at startup from environment variables. They're plain booleans — check them anywhere in your code.
+These are read once at startup from environment variables. They're plain booleans, check them anywhere in your code.
 ## Environment variables
 <table>
 <thead><tr><th>Variable</th><th>Sets</th><th>When to use</th></tr></thead>
@@ -80,7 +80,7 @@ function Indicator() {
 }
 ```
 ## Built-in widget support
-All built-in TermUI widgets respect the caps flags automatically — you don't need to add guards when using them:
+All built-in TermUI widgets respect the caps flags automatically, you don't need to add guards when using them:
 <table>
 <thead><tr><th>Widget</th><th>NO_UNICODE</th><th>NO_MOTION</th></tr></thead>
 <tbody>
@@ -135,8 +135,8 @@ Add this to your test script to catch unicode/motion regressions early:
   }
 }
 ```
-This runs your full test suite with the most restrictive caps settings — the same environment a developer might use over SSH or in a bare Linux container.
+This runs your full test suite with the most restrictive caps settings, the same environment a developer might use over SSH or in a bare Linux container.
 ## See also
 
-- [useMotion](/docs/jsx/use-motion) — hook for guarding custom animations
-- [Core: String Utilities](/docs/core/unicode) — `caps` object reference and string width helpers
+- [useMotion](/docs/jsx/use-motion), hook for guarding custom animations
+- [Core: String Utilities](/docs/core/unicode), `caps` object reference and string width helpers

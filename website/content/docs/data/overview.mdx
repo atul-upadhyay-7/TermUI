@@ -1,10 +1,10 @@
 ---
 title: "@termuijs/data"
-description: "@termuijs/data provides real-time system metrics for TermUI apps — CPU, memory, disk, network, processes, and HTTP health checks. Use raw collector functions or reactive hooks (useCpu, useMemory, useDisk, useNetwork) that auto-update and clean up on unmount."
+description: "@termuijs/data provides real-time system metrics for TermUI apps, CPU, memory, disk, network, processes, and HTTP health checks. Use raw collector functions or reactive hooks (useCpu, useMemory, useDisk, useNetwork) that auto-update and clean up on unmount."
 ---
 
 # @termuijs/data
-Real-time system statistics for terminal apps — CPU usage, memory, disk, network throughput, running processes, and HTTP endpoint health.
+Real-time system statistics for terminal apps, CPU usage, memory, disk, network throughput, running processes, and HTTP endpoint health.
 
 No native dependencies. Works on macOS, Linux, and Windows (where supported by the underlying Node.js `os` module).
 ## Installation
@@ -14,9 +14,9 @@ npm install @termuijs/data
 ## Two layers
 The package provides two ways to access metrics:
 
-**Raw collectors** — getter properties you read whenever you want a snapshot. No cleanup needed, but you manage the polling yourself.
+**Raw collectors**, getter properties you read whenever you want a snapshot. No cleanup needed, but you manage the polling yourself.
 
-**Reactive hooks** — use inside JSX components. They poll automatically at a configurable interval and clean up their timers when the component unmounts.
+**Reactive hooks**, use inside JSX components. They poll automatically at a configurable interval and clean up their timers when the component unmounts.
 ## Raw API
 The `cpu`, `memory`, `disk`, and `network` objects expose getters. Read a property to take a fresh sample.
 ```ts
@@ -100,7 +100,7 @@ function ProcessTable() {
 }
 ```
 ### useSystemInfo
-Static system information — fetched once on mount, no polling:
+Static system information, fetched once on mount, no polling:
 ```ts
 import { useSystemInfo } from '@termuijs/data'
 
@@ -155,9 +155,9 @@ Return type: `Array<{ url: string, status: number, latencyMs: number, error?: st
 
 All interval hooks default to `1000ms` if `intervalMs` is not provided.
 ## Memory leak note
-Hooks clean up their `useInterval` timers automatically when the component unmounts. Raw collector functions do not start any timers — they're pure reads, no cleanup needed.
+Hooks clean up their `useInterval` timers automatically when the component unmounts. Raw collector functions do not start any timers, they're pure reads, no cleanup needed.
 
 ## See also
 
-- [Widgets: Charts](/docs/widgets/charts) — LineChart, HeatMap, BarChart, Sparkline for visualizing metrics
-- [@termuijs/quick](/docs/guides/quick) — `useCpu`, `useMemory` etc. are re-exported from quick for rapid prototyping
+- [Widgets: Charts](/docs/widgets/charts), LineChart, HeatMap, BarChart, Sparkline for visualizing metrics
+- [@termuijs/quick](/docs/guides/quick), `useCpu`, `useMemory` etc. are re-exported from quick for rapid prototyping

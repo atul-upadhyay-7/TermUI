@@ -46,7 +46,7 @@ new RangeInput(label: string, style?: Partial<Style>, opts?: RangeInputOptions)
 | `step` | `number` | `1` | Amount to increment or decrement per keypress |
 | `color` | `Color` | `cyan` | Track fill color |
 | `showValue` | `boolean` | `true` | Display `low – high` values at the end of the track |
-| `onChange` | `(low: number, high: number) => void` | — | Called when either handle moves |
+| `onChange` | `(low: number, high: number) => void` |, | Called when either handle moves |
 
 **Methods**
 
@@ -101,7 +101,7 @@ new Knob(label?: string, style?: Partial<Style>, opts?: KnobOptions)
 | `step` | `number` | `1` | Amount to change per keypress (must be positive) |
 | `color` | `Color` | `cyan` | Arc fill color when not focused |
 | `showValue` | `boolean` | `true` | Render the numeric value in the center of the knob |
-| `onChange` | `(value: number) => void` | — | Called whenever the value changes |
+| `onChange` | `(value: number) => void` |, | Called whenever the value changes |
 
 **Methods**
 
@@ -117,7 +117,7 @@ new Knob(label?: string, style?: Partial<Style>, opts?: KnobOptions)
 | `Up` or `Right` | Increase by `step` |
 | `Down` or `Left` | Decrease by `step` |
 
-**Sizing tip** — the knob fills the widget's bounding box. Give it equal or close width and height for a round shape. A minimum of `4 × 3` is needed to show the center value.
+**Sizing tip**, the knob fills the widget's bounding box. Give it equal or close width and height for a round shape. A minimum of `4 × 3` is needed to show the center value.
 
 ---
 
@@ -154,8 +154,8 @@ new PinInput(style?: Partial<Style>, opts?: PinInputOptions)
 |------|------|---------|-------------|
 | `length` | `number` | `4` | Number of character slots |
 | `masked` | `boolean` | `false` | Replace visible characters with `•` (or `*` on ASCII-only terminals) |
-| `onChange` | `(value: string) => void` | — | Called after each character change with the current partial value |
-| `onComplete` | `(value: string) => void` | — | Called when all slots are filled |
+| `onChange` | `(value: string) => void` |, | Called after each character change with the current partial value |
+| `onComplete` | `(value: string) => void` |, | Called when all slots are filled |
 
 **Properties**
 

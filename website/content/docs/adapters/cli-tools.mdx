@@ -25,7 +25,7 @@ npm install chalk
 function chalkToTermUI(input: string): string
 ```
 
-- `chalkToTermUI` — returns the input string as-is, or with ANSI codes removed if `NO_COLOR` is set.
+- `chalkToTermUI`, returns the input string as-is, or with ANSI codes removed if `NO_COLOR` is set.
 
 ### Strip ANSI when NO_COLOR is set
 
@@ -72,7 +72,7 @@ interface UseExecaResult {
 }
 ```
 
-- `globalOpts` — default `execa` options applied to every `run` call. Per-call `opts` are merged on top.
+- `globalOpts`, default `execa` options applied to every `run` call. Per-call `opts` are merged on top.
 - `run` accepts a command string with a separate args array, or a single `string[]` where the first element is the executable.
 - `run` returns an `AsyncGenerator`. Each yielded value is one line from stdout or stderr.
 - Output from stdout and stderr is interleaved in arrival order (`execa`'s `all` stream).
@@ -181,13 +181,13 @@ interface CommitResult {
 }
 ```
 
-- `cwd` — working directory for git commands. Defaults to the process's current directory.
-- `status` — returns modified, untracked, and staged file lists.
-- `log` — returns commit history. Pass `simple-git` log options (e.g. `{ maxCount: 10 }`) via `options`.
-- `stage` — stages one file or an array of files.
-- `commit` — commits staged changes with the given message.
-- `push` / `pull` — push to or pull from a remote. All parameters are optional and default to the current branch's tracking remote.
-- `diff` — returns the raw diff string. Pass `simple-git` diff options via `options`.
+- `cwd`, working directory for git commands. Defaults to the process's current directory.
+- `status`, returns modified, untracked, and staged file lists.
+- `log`, returns commit history. Pass `simple-git` log options (e.g. `{ maxCount: 10 }`) via `options`.
+- `stage`, stages one file or an array of files.
+- `commit`, commits staged changes with the given message.
+- `push` / `pull`, push to or pull from a remote. All parameters are optional and default to the current branch's tracking remote.
+- `diff`, returns the raw diff string. Pass `simple-git` diff options via `options`.
 
 ### Show repo status in a TermUI app
 

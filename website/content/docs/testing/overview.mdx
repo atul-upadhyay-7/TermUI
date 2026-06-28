@@ -209,7 +209,7 @@ it('renders the dashboard layout', () => {
 // ]
 ```
 ## Async testing with waitFor
-`waitFor` polls an assertion function until it stops throwing — or times out. Use it for components that update asynchronously:
+`waitFor` polls an assertion function until it stops throwing, or times out. Use it for components that update asynchronously:
 ```ts
 it('shows result after async load', async () => {
     const t = render(<DataLoader />)
@@ -244,7 +244,7 @@ it('renders the header', () => {
     t.unmount()
 })
 ```
-Unlike `lastFrame()`, `renderToString()` is a flat string — lines are joined with newlines. It's easier to use in `toContain` assertions.
+Unlike `lastFrame()`, `renderToString()` is a flat string, lines are joined with newlines. It's easier to use in `toContain` assertions.
 ## Fiber-aware rerender
 `rerender()` now preserves hook state across re-renders. It uses the reconciler's `reRenderComponent` internally, so `useState`, `useRef`, and context values survive:
 ```ts
@@ -262,7 +262,7 @@ it('keeps counter state on rerender', () => {
 ```
 Passing a new element to `rerender(el)` replaces the root component while still preserving any shared context state.
 ## fireKey dispatches to the full fiber tree
-`fireKey` uses `collectInputHandlers` to walk the fiber tree and fire all registered `useInput` and `useKeymap` handlers — including ones in deeply nested child components:
+`fireKey` uses `collectInputHandlers` to walk the fiber tree and fire all registered `useInput` and `useKeymap` handlers, including ones in deeply nested child components:
 ```ts
 it('child input handler fires', () => {
     const t = render(<ParentWithChildren />)
@@ -287,11 +287,11 @@ it('child input handler fires', () => {
 <tr><td>`t.lastFrame()`</td><td>Screen rows as string[]</td></tr>
 <tr><td>`t.toString()`</td><td>Screen as a single string</td></tr>
 <tr><td>`t.renderToString()`</td><td>ANSI-free string snapshot of screen content</td></tr>
-<tr><td>`t.fireKey(key, mods?)`</td><td>Simulate a key press — fires all handlers in fiber tree</td></tr>
+<tr><td>`t.fireKey(key, mods?)`</td><td>Simulate a key press, fires all handlers in fiber tree</td></tr>
 <tr><td>`t.typeText(text)`</td><td>Type characters one by one</td></tr>
 <tr><td>`t.rerender(el?)`</td><td>Re-render preserving hook state. Pass new element to replace root.</td></tr>
 <tr><td>`t.waitFor(fn, opts?)`</td><td>Poll assertion fn until it passes or times out</td></tr>
-<tr><td>`t.unmount()`</td><td>Clean up component state (only this instance — not the whole app)</td></tr>
+<tr><td>`t.unmount()`</td><td>Clean up component state (only this instance, not the whole app)</td></tr>
 <tr><td>`t.container`</td><td>The root Box widget</td></tr>
 <tr><td>`t.screen`</td><td>The raw Screen buffer</td></tr>
 </tbody>

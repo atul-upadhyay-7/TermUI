@@ -1,0 +1,99 @@
+---
+title: "Style & Colors"
+description: "ANSI color and style utilities in @termuijs/core. Apply bold, italic, dim, underline, strikethrough, inverse, and 256-color or truecolor foreground/background to terminal text. Supports hex color input, color blending, and TSS integration for theme-level style variables."
+---
+
+# Style and colors
+
+Styles in TermUI are plain objects that describe how text looks: colors, bold, dim, and so on. There are no class instances to manage.
+
+You build a default, merge overrides in, and the renderer takes care of ANSI output.
+
+## The basics
+
+```ts
+import { defaultStyle, mergeStyles, parseColor } from '@termuijs/core'
+
+// Start with defaults (column layout, no decorations)
+const base = defaultStyle()
+// base.flexDirection === 'column'
+// base.bold === false
+
+// Override specific fields
+const heading = mergeStyles(base, { bold: true, fg: parseColor('cyan') })
+// heading.bold === true, heading.fg === { type: 'named', name: 'cyan' }
+```
+
+## Colors
+
+Colors go through `parseColor()`, which accepts named colors, hex strings, or RGB triples.
+
+```ts
+import { parseColor } from '@termuijs/core'
+
+// Named
+parseColor('red')
+// → { type: 'named', name: 'red' }
+
+// Hex
+parseColor('#ff6600')
+// → { type: 'hex', hex: '#ff6600' }
+
+// RGB
+parseColor('rgb(255, 102, 0)')
+// → { type: 'rgb', r: 255, g: 102, b: 0 }
+```
+
+## Named colors
+
+Standard ANSI colors that work in every terminal:
+
+```ts
+'black' | 'red' | 'green' | 'yellow' | 'blue' |
+'magenta' | 'cyan' | 'white' | 'gray' |
+'brightRed' | 'brightGreen' | 'brightYellow' |
+'brightBlue' | 'brightMagenta' | 'brightCyan' | 'brightWhite'
+```
+
+## Style properties
+
+<table>
+<thead><tr><th>Property</th><th>Type</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><code>fg</code></td><td><code>Color</code></td><td>Foreground (text) color</td></tr>
+<tr><td><code>bg</code></td><td><code>Color</code></td><td>Background color</td></tr>
+<tr><td><code>bold</code></td><td><code>boolean</code></td><td>Bold text</td></tr>
+<tr><td><code>dim</code></td><td><code>boolean</code></td><td>Dimmed text</td></tr>
+<tr><td><code>italic</code></td><td><code>boolean</code></td><td>Italic text</td></tr>
+<tr><td><code>underline</code></td><td><code>boolean</code></td><td>Underlined text</td></tr>
+<tr><td><code>strikethrough</code></td><td><code>boolean</code></td><td>Strikethrough text</td></tr>
+<tr><td><code>inverse</code></td><td><code>boolean</code></td><td>Swap fg/bg colors</td></tr>
+</tbody>
+</table>
+
+## Composing styles
+
+`mergeStyles()` does a shallow merge. the second argument wins for any conflicting property:
+
+```ts
+const base = mergeStyles(defaultStyle(), { fg: parseColor('white') })
+const bold = mergeStyles(base, { bold: true })
+// bold has both fg: white and bold: true
+
+// You can chain as many as you need
+const final = mergeStyles(
+    mergeStyles(base, { dim: true }),
+    { underline: true }
+)
+```
+
+## Rendering to cells
+
+When the renderer writes to the screen buffer, it converts a `Style` into cell attributes using `styleToCellAttrs()`. You rarely call this yourself, but it's there if you need it:
+
+```ts
+import { styleToCellAttrs } from '@termuijs/core'
+
+const attrs = styleToCellAttrs(heading)
+// → { fg: '\x1b[36m', bg: '', attrs: '\x1b[1m' }
+```

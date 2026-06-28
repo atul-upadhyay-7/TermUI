@@ -71,8 +71,8 @@ const useStore = createStore(creator, {
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `key` | `string` | — | Filename stem; saves to `<config-dir>/<key>.json` |
-| `file` | `string` | — | Absolute or relative path; takes precedence over `key` |
+| `key` | `string` |, | Filename stem; saves to `<config-dir>/<key>.json` |
+| `file` | `string` |, | Absolute or relative path; takes precedence over `key` |
 | `debounceMs` | `number` | `100` | Milliseconds to wait before writing after the last update |
 
 ## Writing custom middleware

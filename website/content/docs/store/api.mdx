@@ -30,7 +30,7 @@ Creates a store and returns a hook. Pass either a creator function or a plain st
 | `creator` | `StateCreator<T>` or `T` | A function `(set, get) => T` that returns the initial state, or a plain object. |
 | `options` | `StoreOptions<T>` | Optional. Middleware array and persist configuration. |
 
-**Returns** `UseStore<T>` — a hook function with store methods attached.
+**Returns** `UseStore<T>`, a hook function with store methods attached.
 
 ```ts
 const useCounter = createStore((set, get) => ({
@@ -96,7 +96,7 @@ Merges a partial update into the store state. Pass an object to overwrite specif
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `partial` | `Partial<T>` | Object whose keys are merged into state |
-| `partial` | `(state: T) => Partial<T>` | Updater function — receives current state, returns partial update |
+| `partial` | `(state: T) => Partial<T>` | Updater function, receives current state, returns partial update |
 
 ```ts
 // Object form
@@ -123,7 +123,7 @@ Registers a listener that runs on every state change. Returns an unsubscribe fun
 |-----------|------|-------------|
 | `listener` | `(state: T, prevState: T) => void` | Called after each state update with the new and previous state |
 
-**Returns** `() => void` — unsubscribe function.
+**Returns** `() => void`, unsubscribe function.
 
 ```ts
 const unsub = useCounter.subscribe((state, prev) => {
@@ -239,7 +239,7 @@ Coalesces multiple `setState` calls inside `fn` into a single listener notificat
 |-----------|------|-------------|
 | `fn` | `() => T` | Synchronous or async function containing multiple `setState` calls |
 
-**Returns** The return value of `fn`. Also supports async functions — the flush happens after the returned promise resolves.
+**Returns** The return value of `fn`. Also supports async functions, the flush happens after the returned promise resolves.
 
 ```ts
 import { batch } from '@termuijs/store'

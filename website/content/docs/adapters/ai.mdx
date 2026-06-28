@@ -43,9 +43,9 @@ interface AIMessage {
 }
 ```
 
-- `generate` — sends a single prompt and returns the full response as a string.
-- `chat` — streams a multi-turn conversation. Yields tokens as they arrive. Use `for await` to consume them.
-- `embed` — generates a vector embedding for the input text. Available on the OpenAI provider only (uses `text-embedding-3-small`).
+- `generate`, sends a single prompt and returns the full response as a string.
+- `chat`, streams a multi-turn conversation. Yields tokens as they arrive. Use `for await` to consume them.
+- `embed`, generates a vector embedding for the input text. Available on the OpenAI provider only (uses `text-embedding-3-small`).
 
 OpenAI uses `gpt-4o-mini` for both `generate` and `chat`. Anthropic uses `claude-haiku-4-5`.
 
@@ -118,9 +118,9 @@ interface DocumentChunk {
 }
 ```
 
-- `addDocuments` — embeds each chunk and stores it. Requires an `AIAdapter` with `embed` support.
-- `query` — embeds the query, computes cosine similarity against all stored chunks, returns the top `limit` results (default: 3).
-- `load` / `save` — reads and writes the store from `dbPath`. If no `dbPath` is set, data lives in memory only.
+- `addDocuments`, embeds each chunk and stores it. Requires an `AIAdapter` with `embed` support.
+- `query`, embeds the query, computes cosine similarity against all stored chunks, returns the top `limit` results (default: 3).
+- `load` / `save`, reads and writes the store from `dbPath`. If no `dbPath` is set, data lives in memory only.
 
 ### Helper functions
 

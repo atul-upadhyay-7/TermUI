@@ -1,0 +1,79 @@
+---
+title: "useKeymap"
+description: "useKeymap is a TermUI hook for declarative keyboard shortcuts. Map key combos to handlers per component, with automatic cleanup on unmount. Supports ctrl+, alt+, shift+ modifiers and chaining multiple useKeymap calls."
+---
+
+# useKeymap
+`useKeymap` lets you declare keyboard shortcuts as a plain object. Handlers are registered when the component mounts and cleaned up automatically when it unmounts, no manual `useEffect` cleanup needed.
+## Basic usage
+```ts
+import { useKeymap } from '@termuijs/jsx'
+
+function SearchPanel() {
+    useKeymap({
+        '/':         () => openSearch(),
+        'escape':    () => closeSearch(),
+        'ctrl+f':    () => openSearch(),
+        'ctrl+c':    () => process.exit(0),
+    })
+
+    return <Box>...</Box>
+}
+```
+## Modifier syntax
+Prefix any key with `ctrl+`, `alt+`, `shift+`, or `meta+` separated by `+`:
+<table>
+<thead><tr><th>Binding</th><th>Fires when</th></tr></thead>
+<tbody>
+<tr><td>`'q'`</td><td>q pressed</td></tr>
+<tr><td>`'ctrl+c'`</td><td>Control + C</td></tr>
+<tr><td>`'alt+enter'`</td><td>Alt + Enter</td></tr>
+<tr><td>`'shift+tab'`</td><td>Shift + Tab</td></tr>
+<tr><td>`'ctrl+alt+d'`</td><td>Control + Alt + D</td></tr>
+</tbody>
+</table>
+
+Key names for special keys: `'enter'`, `'escape'`, `'tab'`, `'up'`, `'down'`, `'left'`, `'right'`, `'backspace'`, `'delete'`, `'home'`, `'end'`, `'pageup'`, `'pagedown'`, `'f1'`–`'f12'`.
+## Multiple useKeymap calls
+You can call `useKeymap` more than once in the same component. Each call adds to the map, later registrations don't overwrite earlier ones:
+```ts
+function Dashboard() {
+    useKeymap({ 'q': quit })           // navigation
+    useKeymap({ 'r': refreshData })    // actions
+
+    // Both bindings are active
+}
+```
+This is useful when combining a base keymap with conditionally-active shortcuts.
+## Binding access to the key event
+The handler receives the raw key string and the full `KeyEvent` object as arguments if you need the modifier flags:
+```ts
+useKeymap({
+    'enter': (key, event) => {
+        if (event.shift) {
+            submitAndContinue()
+        } else {
+            submitAndClose()
+        }
+    },
+})
+```
+## Scope and priority
+`useKeymap` handlers fire for every key press unless a focused text input is consuming it. When a `TextInput`, `PasswordInput`, or `PathInput` has input focus, printable character keys and `backspace`/`enter` go to the input first, they won't reach `useKeymap` handlers unless no input is focused.
+
+Global shortcuts using `ctrl+`, `alt+`, and function keys continue to fire regardless of input focus.
+## Comparison with useInput
+<table>
+<thead><tr><th></th><th>useInput</th><th>useKeymap</th></tr></thead>
+<tbody>
+<tr><td>API style</td><td>Callback per key event</td><td>Object map of key → handler</td></tr>
+<tr><td>Modifiers</td><td>Manual `event.ctrl` check</td><td>Declarative `'ctrl+c'` syntax</td></tr>
+<tr><td>Multiple calls</td><td>Chains automatically</td><td>Additive, all bindings active</td></tr>
+<tr><td>Best for</td><td>Raw input, text entry logic</td><td>Application shortcuts, navigation</td></tr>
+</tbody>
+</table>
+
+## See also
+
+- [Focus Management](/docs/jsx/focus), combine with `useFocusTrap` for modal key scoping
+- [useKeyboardNavigation](/docs/jsx/focus), standard list navigation built on `useKeymap`

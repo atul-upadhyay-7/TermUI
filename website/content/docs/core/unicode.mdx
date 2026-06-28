@@ -1,0 +1,89 @@
+---
+title: String Utilities
+description: "String utilities for terminal rendering in @termuijs/core: stringWidth() counts visible columns for wide CJK and emoji characters, truncate() clips to a column limit without breaking multi-byte sequences, wordWrap() reflows text at a given width, and stripAnsi() removes ANSI escape codes."
+---
+
+# String utilities
+
+`@termuijs/core` includes string width and wrapping utilities that handle the tricky parts of terminal text. CJK characters that take two columns, combining marks that take zero, and ANSI escape sequences that should be invisible to layout.
+
+## stringWidth
+
+Calculate how many terminal columns a string occupies. Not the same as `.length`. a Chinese character takes 2 columns, an ANSI escape takes 0:
+
+```ts
+import { stringWidth } from '@termuijs/core'
+
+stringWidth('Hello')   // → 5
+stringWidth('你好')     // → 4  (each CJK char = 2 columns)
+stringWidth('\x1b[32mgreen\x1b[0m')  // → 5  (escapes are invisible)
+```
+
+## truncate
+
+Cut a string to fit a column width, adding an ellipsis if it was truncated:
+
+```ts
+import { truncate } from '@termuijs/core'
+
+truncate('Hello World', 8)   // → 'Hello W…'
+truncate('Short', 10)        // → 'Short'  (no truncation needed)
+truncate('你好世界', 5)       // → '你好…'
+```
+
+## wordWrap
+
+Wrap text to a column width, breaking at word boundaries. Returns a single string with newlines inserted:
+
+```ts
+import { wordWrap } from '@termuijs/core'
+
+const wrapped = wordWrap('The quick brown fox jumps over the lazy dog', 15)
+console.log(wrapped)
+// "The quick brown"
+// "fox jumps over "
+// "the lazy dog"
+
+// Split into lines if you need an array
+const lines = wrapped.split('\n')
+```
+
+## stripAnsi
+
+Remove all ANSI escape sequences from a string, leaving only the visible text:
+
+```ts
+import { stripAnsi } from '@termuijs/core'
+
+stripAnsi('\x1b[32mHello\x1b[0m')  // → 'Hello'
+```
+
+## API reference
+
+<table>
+<thead><tr><th>Function</th><th>Signature</th><th>Returns</th></tr></thead>
+<tbody>
+<tr><td><code>stringWidth</code></td><td><code>(str: string) =&gt; number</code></td><td>Visual width in terminal columns</td></tr>
+<tr><td><code>truncate</code></td><td><code>(str, maxWidth, ellipsis?) =&gt; string</code></td><td>Truncated string with ellipsis</td></tr>
+<tr><td><code>wordWrap</code></td><td><code>(str, width) =&gt; string</code></td><td>Word-wrapped string with <code>\n</code></td></tr>
+<tr><td><code>stripAnsi</code></td><td><code>(str: string) =&gt; string</code></td><td>String with ANSI codes removed</td></tr>
+</tbody>
+</table>
+
+## Terminal capability flags
+`@termuijs/core` also exports the `caps` object, a set of boolean flags that describe what the current terminal environment supports:
+```ts
+import { caps } from '@termuijs/core'
+
+caps.unicode   // false when NO_UNICODE=1 — disable unicode box chars, emoji, block elements
+caps.motion    // false when NO_MOTION=1  — disable animations and timers
+caps.color     // false when NO_COLOR=1   — disable all ANSI color sequences
+```
+These are evaluated once at module load from environment variables. All built-in widgets check them automatically. Use them in your own code to provide ASCII fallbacks:
+```ts
+import { caps } from '@termuijs/core'
+
+const bullet = caps.unicode ? '●' : '*'
+const bar    = caps.unicode ? '█' : '#'
+```
+See [Accessibility & caps flags](/docs/guides/accessibility) for the full guide including WCAG contrast utilities.

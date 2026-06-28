@@ -1,6 +1,6 @@
 ---
 title: "Focus Management"
-description: "TermUI's focus system provides useFocusManager, useFocus, useFocusTrap, and useKeyboardNavigation hooks. Manage keyboard focus across widgets, trap Tab inside modals, and navigate lists with arrow keys — all with clean unmount cleanup."
+description: "TermUI's focus system provides useFocusManager, useFocus, useFocusTrap, and useKeyboardNavigation hooks. Manage keyboard focus across widgets, trap Tab inside modals, and navigate lists with arrow keys, all with clean unmount cleanup."
 ---
 
 # Focus Management
@@ -9,7 +9,7 @@ TermUI ships four hooks for managing keyboard focus. Together they handle everyt
 <table>
 <thead><tr><th>Hook</th><th>Role</th></tr></thead>
 <tbody>
-<tr><td>`useFocusManager`</td><td>Owns focus state for a subtree — mount once near the root</td></tr>
+<tr><td>`useFocusManager`</td><td>Owns focus state for a subtree, mount once near the root</td></tr>
 <tr><td>`useFocus`</td><td>Reads and controls focus for a single widget</td></tr>
 <tr><td>`useFocusTrap`</td><td>Confines Tab/Shift+Tab to a list of IDs (for modals)</td></tr>
 <tr><td>`useKeyboardNavigation`</td><td>Arrow key navigation for lists and menus</td></tr>
@@ -19,7 +19,7 @@ TermUI ships four hooks for managing keyboard focus. Together they handle everyt
 ---
 
 ## useFocusManager
-Provides the focus context for all descendant components. Returns `{ focused, focus, blur, FocusContext }` — wrap children in `FocusContext.Provider` to share state.
+Provides the focus context for all descendant components. Returns `{ focused, focus, blur, FocusContext }`, wrap children in `FocusContext.Provider` to share state.
 ```ts
 import { useFocusManager } from '@termuijs/jsx'
 
@@ -143,7 +143,7 @@ function Menu({ items }: { items: string[] }) {
 <tr><td>`itemCount`</td><td>`number`</td><td>Required</td><td>Total number of items to navigate</td></tr>
 <tr><td>`loop`</td><td>`boolean`</td><td>`true`</td><td>Wrap around at list boundaries</td></tr>
 <tr><td>`pageSize`</td><td>`number`</td><td>`10`</td><td>How many items `PageUp`/`PageDown` skip</td></tr>
-<tr><td>`onSelect`</td><td>`(index: number) => void`</td><td>—</td><td>Called when Enter is pressed</td></tr>
+<tr><td>`onSelect`</td><td>`(index: number) => void`</td><td>-</td><td>Called when Enter is pressed</td></tr>
 </tbody>
 </table>
 
@@ -179,5 +179,5 @@ function LoginForm() {
 
 ## See also
 
-- [useKeymap](/docs/jsx/use-keymap) — declarative key bindings per component
-- [UI Inputs](/docs/ui/inputs) — PasswordInput, NumberInput, PathInput built on this focus system
+- [useKeymap](/docs/jsx/use-keymap), declarative key bindings per component
+- [UI Inputs](/docs/ui/inputs), PasswordInput, NumberInput, PathInput built on this focus system

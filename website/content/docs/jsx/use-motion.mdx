@@ -1,10 +1,10 @@
 ---
 title: "useMotion"
-description: "useMotion is a TermUI hook that reads the NO_MOTION environment flag. Use it to skip animations for users who prefer reduced motion — CI environments, screen readers, or any NO_MOTION=1 setting."
+description: "useMotion is a TermUI hook that reads the NO_MOTION environment flag. Use it to skip animations for users who prefer reduced motion, CI environments, screen readers, or any NO_MOTION=1 setting."
 ---
 
 # useMotion
-`useMotion` tells you whether animations are enabled in the current environment. Set `NO_MOTION=1` to disable all motion — useful for CI pipelines, screen readers, and accessibility.
+`useMotion` tells you whether animations are enabled in the current environment. Set `NO_MOTION=1` to disable all motion, useful for CI pipelines, screen readers, and accessibility.
 ## Usage
 ```ts
 import { useMotion } from '@termuijs/jsx'
@@ -67,9 +67,9 @@ animateSpring({ from: 0, to: 100 },
     () => setAnimating(false)
 )
 ```
-You don't need to check `useMotion()` yourself when using `@termuijs/motion` — it handles the flag internally.
+You don't need to check `useMotion()` yourself when using `@termuijs/motion`, it handles the flag internally.
 ## See also
 
-- [Springs](/docs/motion/springs) — spring physics animations
-- [Transitions](/docs/motion/transitions) — fade, slide, and timing-based transitions
-- [Accessibility & caps flags](/docs/guides/accessibility) — full docs on NO_MOTION, NO_UNICODE, NO_COLOR
+- [Springs](/docs/motion/springs), spring physics animations
+- [Transitions](/docs/motion/transitions), fade, slide, and timing-based transitions
+- [Accessibility & caps flags](/docs/guides/accessibility), full docs on NO_MOTION, NO_UNICODE, NO_COLOR

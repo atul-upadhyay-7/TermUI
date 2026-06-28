@@ -1,0 +1,332 @@
+---
+title: "UI Components Overview"
+description: "@termuijs/ui provides 30+ interactive terminal components including Select, Tabs, Modal, Toast, Drawer, Wizard, RadioGroup, TreeSelect, MenuBar, and more. Each manages its own keyboard navigation and focus ring. Built on @termuijs/widgets and styled through @termuijs/tss."
+---
+
+# UI Components
+`@termuijs/ui` has 30+ interactive components built on top of `@termuijs/widgets`. Each one handles its own keyboard navigation, focus management, and rendering.
+
+You wire up data, set callbacks, and let the widget do the rest.
+## Installation
+```ts
+npm install @termuijs/ui
+```
+Peer dependencies: `@termuijs/core` and  `@termuijs/widgets` must be installed in the same project.
+## Select
+Single-choice dropdown with keyboard navigation. Up/Down to move, Enter to confirm, Escape to close.
+```ts
+import { Select } from '@termuijs/ui'
+import { App } from '@termuijs/core'
+
+const select = new Select(
+    [
+{ label: 'Development', value: 'dev' },
+{ label: 'Staging',     value: 'staging' },
+{ label: 'Production',  value: 'prod', disabled: true },
+    ],
+    {
+label: 'Choose environment:',
+onSelect: (option, index) => console.log('Picked:', option.value),
+    }
+)
+
+const app = new App(select, { fullscreen: true })
+app.events.on('key', (e) => {
+    if (e.key === 'up')     select.selectPrev()
+    if (e.key === 'down')   select.selectNext()
+    if (e.key === 'enter')  select.confirm()
+    if (e.key === 'escape') select.close()
+})
+await app.mount()
+```
+### Select Methods
+<table>
+<thead><tr><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td>`open()`</td><td>Expand the dropdown</td></tr>
+<tr><td>`close()`</td><td>Collapse the dropdown</td></tr>
+<tr><td>`toggle()`</td><td>Toggle open/closed</td></tr>
+<tr><td>`selectNext()`</td><td>Move cursor down (skips disabled)</td></tr>
+<tr><td>`selectPrev()`</td><td>Move cursor up (skips disabled)</td></tr>
+<tr><td>`confirm()`</td><td>Fire `onSelect` with current item</td></tr>
+</tbody>
+</table>
+## MultiSelect
+Multi-choice selector. Space to toggle an item, Enter to submit the selection.
+```ts
+import { MultiSelect } from '@termuijs/ui'
+
+const multi = new MultiSelect(
+    [
+{ label: '@termuijs/core',    value: 'core' },
+{ label: '@termuijs/widgets', value: 'widgets' },
+{ label: '@termuijs/motion',  value: 'motion' },
+{ label: '@termuijs/tss',     value: 'tss' },
+    ],
+    {
+label: 'Select packages to install:',
+onSubmit: (selected) => console.log('Chosen:', selected),
+    }
+)
+```
+### MultiSelect Methods
+<table>
+<thead><tr><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td>`selectNext()`</td><td>Move cursor down (skips disabled)</td></tr>
+<tr><td>`selectPrev()`</td><td>Move cursor up (skips disabled)</td></tr>
+<tr><td>`toggleCurrent()`</td><td>Toggle the item at the cursor</td></tr>
+<tr><td>`submit()`</td><td>Fire `onSubmit` with all selected options</td></tr>
+<tr><td>`selectedOptions`</td><td>Array of currently selected options</td></tr>
+</tbody>
+</table>
+## Tabs
+Tabbed content panels. Each tab holds a label and a content widget.
+
+Arrow keys switch tabs.
+```ts
+import { Tabs } from '@termuijs/ui'
+import { Text } from '@termuijs/widgets'
+import { App } from '@termuijs/core'
+
+const tabs = new Tabs(
+    [
+{ label: 'Overview', content: new Text('Overview content here') },
+{ label: 'Logs',     content: new Text('Log output') },
+{ label: 'Metrics',  content: new Text('Metrics data') },
+    ],
+)
+
+const app = new App(tabs, { fullscreen: true })
+app.events.on('key', (e) => {
+    if (e.key === 'left')  tabs.prevTab()
+    if (e.key === 'right') tabs.nextTab()
+})
+await app.mount()
+```
+### Tabs Methods
+<table>
+<thead><tr><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td>`nextTab()`</td><td>Switch to the next tab (wraps around)</td></tr>
+<tr><td>`prevTab()`</td><td>Switch to the previous tab (wraps around)</td></tr>
+<tr><td>`selectTab(i)`</td><td>Jump to tab at index `i`</td></tr>
+</tbody>
+</table>
+## Modal
+Overlay dialog that can hold any widget as content. Call  `show()` and `hide()` to control visibility.
+```ts
+import { Modal } from '@termuijs/ui'
+import { Text } from '@termuijs/widgets'
+
+const modal = new Modal({
+    title: 'Delete item?',
+    width: 40,
+    height: 8,
+})
+modal.setContent(new Text('This action cannot be undone.'))
+
+// Show the modal when user presses 'd'
+app.events.on('key', (e) => {
+    if (e.key === 'd')      modal.show()
+    if (e.key === 'escape') modal.hide()
+})
+```
+### Modal Methods
+<table>
+<thead><tr><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td>`show()`</td><td>Make the modal visible</td></tr>
+<tr><td>`hide()`</td><td>Hide the modal</td></tr>
+<tr><td>`toggle()`</td><td>Toggle visibility</td></tr>
+<tr><td>`setContent(widget)`</td><td>Replace the modal body</td></tr>
+</tbody>
+</table>
+## Tree
+Expandable tree for hierarchical data. Up/Down to navigate, Enter or Space to expand/collapse or select leaf nodes.
+```ts
+import { Tree } from '@termuijs/ui'
+import { App } from '@termuijs/core'
+
+const tree = new Tree(
+    [
+{
+label: 'src/',
+expanded: true,
+children: [
+{
+label: 'components/',
+children: [
+{ label: 'Button.tsx' },
+{ label: 'Input.tsx' },
+],
+},
+{ label: 'index.ts' },
+],
+},
+    ],
+    {
+onSelect: (node, path) => console.log('Selected:', node.label),
+    }
+)
+
+const app = new App(tree, { fullscreen: true })
+app.events.on('key', (e) => {
+    if (e.key === 'up')    tree.selectPrev()
+    if (e.key === 'down')  tree.selectNext()
+    if (e.key === 'enter') tree.confirm()
+    if (e.key === 'space') tree.toggleExpand()
+})
+await app.mount()
+```
+## Toast
+Timed notification. Push messages to a stack; they auto-expire after a timeout.
+```ts
+import { Toast } from '@termuijs/ui'
+
+const toasts = new Toast({
+    position: 'bottom-right',
+    durationMs: 3000,
+    maxVisible: 5,
+})
+
+// Push notifications from anywhere
+toasts.success('File saved')
+toasts.error('Network error')
+toasts.warning('Disk usage at 90%')
+toasts.info('Syncing...')
+```
+### Toast Methods
+<table>
+<thead><tr><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td>`push(text, type?)`</td><td>Show a notification (`type`: info, success, warning, error)</td></tr>
+<tr><td>`info(text)`</td><td>Shortcut for `push(text, 'info')`</td></tr>
+<tr><td>`success(text)`</td><td>Shortcut for `push(text, 'success')`</td></tr>
+<tr><td>`warning(text)`</td><td>Shortcut for `push(text, 'warning')`</td></tr>
+<tr><td>`error(text)`</td><td>Shortcut for `push(text, 'error')`</td></tr>
+</tbody>
+</table>
+## Form
+Form with fields, Tab/Shift+Tab navigation, and submission.
+```ts
+import { Form } from '@termuijs/ui'
+import { App } from '@termuijs/core'
+
+const form = new Form(
+    [
+{ name: 'user', label: 'Username', required: true },
+{ name: 'pass', label: 'Password', required: true, masked: true },
+    ],
+    {
+onSubmit: (values) => {
+console.log('Submitted:', values)
+// values is Map<string, string>
+},
+    }
+)
+
+const app = new App(form, { fullscreen: true })
+app.events.on('key', (e) => {
+    if (e.key === 'tab')   form.nextField()
+    if (e.key === 'enter') form.submit()
+})
+await app.mount()
+```
+## CommandPalette
+Fuzzy-search command launcher. Type to filter, Enter to run.
+```ts
+import { CommandPalette } from '@termuijs/ui'
+
+const palette = new CommandPalette(
+    [
+{ id: 'open',  label: 'Open file…',    action: openFile },
+{ id: 'save',  label: 'Save',           shortcut: 'Ctrl+S', action: saveFile },
+{ id: 'quit',  label: 'Quit',           shortcut: 'Ctrl+Q', action: () => app.exit() },
+{ id: 'theme', label: 'Switch theme…',  action: pickTheme },
+    ],
+    { placeholder: 'Type a command…' }
+)
+
+// Toggle with Ctrl+P
+app.events.on('key', (e) => {
+    if (e.ctrl && e.key === 'p') palette.toggle()
+})
+```
+### CommandPalette Methods
+<table>
+<thead><tr><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td>`show()`</td><td>Open the palette, reset query</td></tr>
+<tr><td>`hide()`</td><td>Close the palette</td></tr>
+<tr><td>`toggle()`</td><td>Open if closed, close if open</td></tr>
+</tbody>
+</table>
+## ConfirmDialog
+Yes/No confirmation. A focused version of Modal that handles the confirm/cancel flow for you.
+```ts
+import { ConfirmDialog } from '@termuijs/ui'
+
+const dialog = new ConfirmDialog({
+    title: 'Delete this item?',
+    message: 'This cannot be undone.',
+    confirmLabel: 'Delete',
+    cancelLabel: 'Cancel',
+    onConfirm: () => deleteItem(),
+    onCancel: () => console.log('Cancelled'),
+})
+```
+## Divider
+A horizontal or vertical line to separate sections.
+```ts
+import { Divider } from '@termuijs/ui'
+
+// Horizontal divider with a label
+const divider = new Divider({ label: 'Settings', style: 'dashed' })
+```
+## Additional components
+
+The following components were added in v0.1.6:
+
+| Component | Description |
+|---|---|
+| `Drawer` | Slide-in panel from any edge with focus trap |
+| `Wizard` | Multi-step form flow with back/next navigation |
+| `RadioGroup` | Keyboard-navigable radio button group with disabled option support |
+| `TreeSelect` | Hierarchical select with single and multi selection |
+| `TextArea` | Multi-line text editor widget |
+| `ButtonGroup` | Grouped button row with keyboard selection |
+| `AppShell` | Full-screen app shell with header, sidebar, and content regions |
+| `FilePicker` | File system browser for picking files and directories |
+| `SegmentedControl` | Tab-style control for switching between a fixed set of options |
+| `MenuBar` | Horizontal menu bar with dropdown submenus |
+| `MaskedInput` | Text input with a configurable input mask |
+| `Disclosure` | Toggle-able content section with unicode fallback |
+| `TagInput` | Tag entry field with add and remove support |
+| `Popover` | Anchored floating popover panel |
+| `Combobox` | Searchable select with freeform text entry |
+| `Listbar` | Horizontal item list with keyboard navigation |
+| `Menu` | Context or dropdown menu |
+| `Slider` | Single-handle range slider |
+| `Switch` | Toggle switch with on/off state |
+| `DateRangePicker` | Start and end date selection with calendar |
+| `Transfer` | Dual-list transfer control for moving items between sets |
+| `EmailInput` | Text input with email format validation |
+| `Checkbox` | Single checkbox with label |
+| `CheckboxGroup` | Multiple checkboxes with group state |
+| `Rating` | Star rating input |
+| `ThemeSwitcher` | Theme picker for switching TSS themes at runtime |
+| `SearchInput` | Text input with search icon and clear button |
+| `Pages` | Page container with slide transitions |
+| `ContentSwitcher` | Toggles between content panels without tabs |
+| `BasicAuthPrompt` | Username and password prompt widget |
+| `SortPrompt` | Drag-order list for ranking items |
+| `ScalePrompt` | Likert-scale rating prompt |
+| `SnippetPrompt` | Code snippet selection prompt |
+| `QuizPrompt` | Multiple-choice quiz widget |
+
+## See also
+
+- [Widgets. Box, Text, ProgressBar, Table](/docs/widgets/overview)
+- [TSS. style UI components with themes](/docs/tss/overview)
+- [Event Emitter. keyboard event handling](/docs/core/event-emitter)
