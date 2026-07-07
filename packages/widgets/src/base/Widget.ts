@@ -175,6 +175,7 @@ export abstract class Widget {
     addChild(child: Widget): void {
         child.parent = this;
         this._children.push(child);
+        this.markDirty();
         // Propagate any dirty state the child accumulated before being added
         // to the tree (e.g., Pty output that arrived before mount).
         if (child._dirty) {
@@ -188,6 +189,7 @@ export abstract class Widget {
         if (idx >= 0) {
             this._children.splice(idx, 1);
             child.destroy();
+            this.markDirty();
         }
     }
 
@@ -198,6 +200,7 @@ export abstract class Widget {
         for (const child of children) {
             child.destroy();
         }
+        this.markDirty();
     }
 
     /**
