@@ -106,6 +106,24 @@ function colorsEqual(a: Color, b: Color): boolean {
     }
 }
 
+function colorSeed(c: Color): number {
+    switch (c.type) {
+        case 'none': return 0;
+        case 'named': {
+            let h = 0;
+            for (let i = 0; i < c.name.length; i++)
+                h = ((h << 5) - h + c.name.charCodeAt(i)) | 0;
+            return h;
+        }
+        case 'ansi256': return c.code;
+        case 'rgb': return (c.r << 16) | (c.g << 8) | c.b;
+        case 'hex': {
+            const n = parseInt(c.hex.slice(1), 16);
+            return isNaN(n) ? 0 : n;
+        }
+    }
+}
+
 /**
  * Double-buffered 2D cell grid for the terminal.
  *
@@ -198,8 +216,6 @@ export class Screen {
         let hash = 0;
         for (const cell of this.back[row]) {
             if (cell.width === 0) continue;
-            const fg = cell.fg.type;
-            const bg = cell.bg.type;
             const bits =
                 (cell.bold ? 1 : 0) |
                 (cell.italic ? 2 : 0) |
@@ -207,7 +223,7 @@ export class Screen {
                 (cell.dim ? 8 : 0) |
                 (cell.strikethrough ? 16 : 0) |
                 (cell.inverse ? 32 : 0);
-            const seed = fg.charCodeAt(0) * 65536 + bg.charCodeAt(0) * 4096 + bits;
+            const seed = colorSeed(cell.fg) * 65536 + colorSeed(cell.bg) * 4096 + bits;
             hash = ((hash << 7) - hash + seed) | 0;
             if (cell.link) {
                 for (let i = 0; i < cell.link.length; i++)

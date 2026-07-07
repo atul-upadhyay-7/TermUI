@@ -201,6 +201,42 @@ describe('Screen', () => {
         screen.popTranslateY();
     });
 
+    it('getStyleLine produces different hashes for different color codes within same type', () => {
+        const screen = new Screen(40, 5);
+        screen.setCell(0, 0, { fg: { type: 'ansi256', code: 1 } });
+        const hash1 = screen.getStyleLine(0);
+        screen.setCell(0, 0, { fg: { type: 'ansi256', code: 9 } });
+        const hash2 = screen.getStyleLine(0);
+        expect(hash1).not.toBe(hash2);
+    });
+
+    it('getStyleLine distinguishes different named colors', () => {
+        const screen = new Screen(40, 5);
+        screen.setCell(0, 0, { fg: { type: 'named', name: 'red' } });
+        const hash1 = screen.getStyleLine(0);
+        screen.setCell(0, 0, { fg: { type: 'named', name: 'blue' } });
+        const hash2 = screen.getStyleLine(0);
+        expect(hash1).not.toBe(hash2);
+    });
+
+    it('getStyleLine distinguishes different RGB colors', () => {
+        const screen = new Screen(40, 5);
+        screen.setCell(0, 0, { fg: { type: 'rgb', r: 255, g: 0, b: 0 } });
+        const hash1 = screen.getStyleLine(0);
+        screen.setCell(0, 0, { fg: { type: 'rgb', r: 0, g: 0, b: 255 } });
+        const hash2 = screen.getStyleLine(0);
+        expect(hash1).not.toBe(hash2);
+    });
+
+    it('saveLines and getStyleLine detect style-only updates', () => {
+        const screen = new Screen(40, 5);
+        screen.writeString(0, 0, 'Hello', { fg: { type: 'ansi256', code: 1 } });
+        screen.saveLines();
+        // Same chars, different color code
+        screen.writeString(0, 0, 'Hello', { fg: { type: 'ansi256', code: 9 } });
+        expect(screen.getStyleLine(0)).not.toBe(screen.getPreviousStyleLine(0));
+    });
+
     it('setCell is clipped by translate-adjusted region when parents have translate', () => {
         const screen = new Screen(30, 20);
         // Simulate: outer container at absolute y=10 with scrollOffset=5
