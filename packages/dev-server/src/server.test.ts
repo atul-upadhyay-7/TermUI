@@ -85,7 +85,7 @@ describe('DevServer', () => {
         server.stop();
 
         expect(server.isRunning).toBe(false);
-        expect(mockChild.kill).toHaveBeenCalledWith('SIGTERM');
+        expect(mockChild.kill).toHaveBeenCalledWith('SIGINT');
     });
 
     it('sets banner after a respawn', async () => {

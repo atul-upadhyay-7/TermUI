@@ -189,6 +189,9 @@ export class Renderer {
             this._renderRequested = true;
             // Reset style fingerprint to prevent color bleed on retry.
             this._lastStyleFingerprint = null;
+            // Reset the re-entrancy gate so the next tick retries instead
+            // of being silently skipped (without swap() the epoch never advanced).
+            this._screen.flushEpoch = -1;
         }
     }
 

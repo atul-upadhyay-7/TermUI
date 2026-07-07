@@ -262,4 +262,36 @@ describe('Renderer profiling hooks', () => {
         const resetCount = (output.match(/\x1b\[0m/g) || []).length;
         expect(resetCount).toBeGreaterThanOrEqual(2);
     });
+
+    it('continues rendering after a flush error instead of freezing permanently', () => {
+        vi.spyOn(console, 'error').mockImplementation(() => {});
+
+        const renderer = new Renderer(terminal, screen);
+        let stats: FrameStats | undefined;
+        renderer.onFrame(s => {
+            stats = s;
+        });
+
+        // First render — establish a clean base
+        screen.setCell(0, 0, { char: 'x' });
+        renderer.renderNow();
+        expect(stats).toBeDefined();
+        expect(stats!.bytesWritten).toBeGreaterThan(0);
+        stats = undefined;
+
+        // Second render — make flush throw
+        vi.spyOn(terminal, 'write').mockImplementationOnce(() => {
+            throw new Error('simulated write failure');
+        });
+
+        expect(() => renderer.renderNow()).not.toThrow();
+
+        // flushEpoch must have been reset so the next render is not silently skipped
+        // Third render — must succeed and produce output
+        renderer.renderNow();
+        expect(stats).toBeDefined();
+        expect(stats!.bytesWritten).toBeGreaterThan(0);
+
+        vi.restoreAllMocks();
+    });
 });
