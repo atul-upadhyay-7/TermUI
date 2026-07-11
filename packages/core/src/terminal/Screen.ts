@@ -2,7 +2,7 @@
 // @termuijs/core — Screen buffer (double-buffered cell grid)
 // ─────────────────────────────────────────────────────
 
-import type { Color } from '../style/Color.js';
+import { type Color, colorToRgb } from '../style/Color.js';
 import { stringWidth, segmenter } from '../utils/unicode.js';
 import { stripAnsiControl } from '../utils/ansi.js';
 import { caps } from './env-caps.js';
@@ -480,14 +480,83 @@ export class Screen {
      * Export current screen as SVG.
      */
     exportSVG(): string {
-        return `
-<svg xmlns="http://www.w3.org/2000/svg"
-     width="${this._cols * 8}"
-     height="${this._rows * 16}">
-    <text x="10" y="20">
-        Terminal Export
-    </text>
-</svg>`;
+        const bgElements: string[] = [];
+        const textElements: string[] = [];
+
+        for (let r = 0; r < this._rows; r++) {
+            for (let c = 0; c < this._cols; c++) {
+                const cell = this.back[r][c];
+                if (cell.width === 0) {
+                    continue;
+                }
+
+                // Resolve colors (considering inverse)
+                let fg = cell.fg;
+                let bg = cell.bg;
+                if (cell.inverse) {
+                    fg = cell.bg;
+                    bg = cell.fg;
+                }
+
+                let fgHex = '#ffffff';
+                if (fg.type !== 'none') {
+                    fgHex = rgbToHex(colorToRgb(fg));
+                } else if (cell.inverse) {
+                    fgHex = '#000000';
+                }
+
+                let bgHex: string | null = null;
+                if (bg.type !== 'none') {
+                    bgHex = rgbToHex(colorToRgb(bg));
+                } else if (cell.inverse) {
+                    bgHex = '#ffffff';
+                }
+
+                // Draw background
+                if (bgHex) {
+                    const rectWidth = cell.width * 8;
+                    bgElements.push(
+                        `    <rect x="${c * 8}" y="${r * 16}" width="${rectWidth}" height="16" fill="${bgHex}" />`
+                    );
+                }
+
+                // Draw text
+                const char = cell.char;
+                if (char && char !== ' ' && char !== '\0') {
+                    const escaped = escapeXml(char);
+                    const attrs: string[] = [];
+                    
+                    if (cell.bold) attrs.push('font-weight="bold"');
+                    if (cell.italic) attrs.push('font-style="italic"');
+                    
+                    const decors: string[] = [];
+                    if (cell.underline) decors.push('underline');
+                    if (cell.strikethrough) decors.push('line-through');
+                    if (decors.length > 0) {
+                        attrs.push(`text-decoration="${decors.join(' ')}"`);
+                    }
+                    
+                    if (cell.dim) {
+                        attrs.push('opacity="0.6"');
+                    }
+
+                    const attrStr = attrs.length > 0 ? ' ' + attrs.join(' ') : '';
+                    textElements.push(
+                        `    <text x="${c * 8}" y="${r * 16 + 12}" fill="${fgHex}" font-family="monospace" font-size="14"${attrStr}>${escaped}</text>`
+                    );
+                }
+            }
+        }
+
+        const lines = [
+            `<svg xmlns="http://www.w3.org/2000/svg" width="${this._cols * 8}" height="${this._rows * 16}" xml:space="preserve">`,
+            `    <rect width="${this._cols * 8}" height="${this._rows * 16}" fill="#121212" />`,
+            ...bgElements,
+            ...textElements,
+            `</svg>`
+        ];
+
+        return lines.join('\n');
     }
 
     /**
@@ -560,4 +629,22 @@ export class Screen {
         this._backdropFilters = [];
     }
 
+}
+
+function escapeXml(str: string): string {
+    return str.replace(/[&<>"']/g, (m) => {
+        switch (m) {
+            case '&': return '&amp;';
+            case '<': return '&lt;';
+            case '>': return '&gt;';
+            case '"': return '&quot;';
+            case "'": return '&apos;';
+            default: return m;
+        }
+    });
+}
+
+function rgbToHex(rgb: [number, number, number]): string {
+    const [r, g, b] = rgb;
+    return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
 }
