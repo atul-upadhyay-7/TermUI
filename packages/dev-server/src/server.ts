@@ -297,7 +297,7 @@ export class DevServer {
         this._child = null;
 
         try {
-            child.kill('SIGINT');
+            child.kill('SIGTERM');
         } catch {
             // already dead
         }
