@@ -106,6 +106,30 @@ function colorsEqual(a: Color, b: Color): boolean {
     }
 }
 
+/** ASCII hex digit char code -> 0-15, branch-free-ish (no string allocation). */
+function hexDigit(code: number): number {
+    // '0'-'9' = 48-57, 'A'-'F' = 65-70, 'a'-'f' = 97-102
+    return code >= 97 ? code - 87 : code >= 65 ? code - 55 : code - 48;
+}
+
+function hashColor(color: Color, hash: number): number {
+    switch (color.type) {
+        case 'none':    return ((hash << 3) - hash) | 0;
+        case 'named':   return ((hash << 5) - hash + color.name.charCodeAt(0) * 256 + color.name.charCodeAt(color.name.length - 1)) | 0;
+        case 'ansi256': return ((hash << 7) - hash + color.code) | 0;
+        case 'rgb':     return ((hash << 9) - hash + color.r * 65536 + color.g * 256 + color.b) | 0;
+        case 'hex':     {
+            // '#rrggbb' — decode the 3 byte pairs directly via charCodeAt instead of
+            // looping over the string (this runs per-cell in the render hot path).
+            const s = color.hex;
+            const r = (hexDigit(s.charCodeAt(1)) << 4) | hexDigit(s.charCodeAt(2));
+            const g = (hexDigit(s.charCodeAt(3)) << 4) | hexDigit(s.charCodeAt(4));
+            const b = (hexDigit(s.charCodeAt(5)) << 4) | hexDigit(s.charCodeAt(6));
+            return ((hash << 9) - hash + r * 65536 + g * 256 + b) | 0;
+        }
+    }
+}
+
 /**
  * Double-buffered 2D cell grid for the terminal.
  *
@@ -198,8 +222,10 @@ export class Screen {
         let hash = 0;
         for (const cell of this.back[row]) {
             if (cell.width === 0) continue;
-            const fg = cell.fg.type;
-            const bg = cell.bg.type;
+            
+            hash = hashColor(cell.fg, hash);
+            hash = hashColor(cell.bg, hash);
+            
             const bits =
                 (cell.bold ? 1 : 0) |
                 (cell.italic ? 2 : 0) |
@@ -207,8 +233,9 @@ export class Screen {
                 (cell.dim ? 8 : 0) |
                 (cell.strikethrough ? 16 : 0) |
                 (cell.inverse ? 32 : 0);
-            const seed = fg.charCodeAt(0) * 65536 + bg.charCodeAt(0) * 4096 + bits;
-            hash = ((hash << 7) - hash + seed) | 0;
+                
+            hash = ((hash << 7) - hash + bits) | 0;
+            
             if (cell.link) {
                 for (let i = 0; i < cell.link.length; i++)
                     hash = ((hash << 5) - hash + cell.link.charCodeAt(i)) | 0;
